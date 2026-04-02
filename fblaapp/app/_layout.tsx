@@ -21,7 +21,7 @@
  */
 
 import { Tabs } from "expo-router";
-import { Platform, StyleSheet } from "react-native";
+import { Image, Platform, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, FONTS, RADIUS } from "../constants/theme";
 
@@ -70,7 +70,7 @@ export default function RootLayout() {
           backgroundColor: COLORS.navyDark,
           borderTopColor: COLORS.navyLight,
           borderTopWidth: 1,
-          height: Platform.OS === "ios" ? 85 : 65, // Extra height on iOS for home indicator
+          height: Platform.OS === "ios" ? 85 : 75, // Extra height on iOS for home indicator
           paddingBottom: Platform.OS === "ios" ? 28 : 10,
           paddingTop: 8,
         },
@@ -88,7 +88,12 @@ export default function RootLayout() {
         name="index"
         options={{
           title: "Home",
-          headerTitle: "FBLA",
+          headerTitle: () => (
+            <Image
+              source={require("../assets/images/fblalogowhite.png")}
+              style={{ width: 80, height: 40, resizeMode: "contain" }}
+            />
+          ),
           tabBarIcon: ({ focused }) => (
             <TabIcon name={focused ? "home" : "home-outline"} focused={focused} />
           ),

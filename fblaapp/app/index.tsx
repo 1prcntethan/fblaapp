@@ -279,9 +279,9 @@ export default function HomeScreen() {
             </Text>
             <Text style={styles.memberName}>{MOCK_MEMBER.firstName} 👋</Text>
             {/* Chapter & role subtitle */}
-            <Text style={styles.chapterSubtitle}>
+            {/* <Text style={styles.chapterSubtitle}>
               {MOCK_MEMBER.role} · {MOCK_MEMBER.chapter}
-            </Text>
+            </Text> */}
           </View>
 
           {/* Right: avatar circle */}
