@@ -24,26 +24,33 @@ export type EventType =
   | "conference"
   | "deadline";
 
-// ─── Logged-in member (for the home greeting) ─────────────────────────────────
+// ─── Logged-in member ────────────────────────────────────────────────────────
+// Used on the Home screen (greeting) and the Profile screen (full detail).
+// Extend this object freely — add fields like `phone`, `grade`, etc.
+// When connecting a real auth system, replace this with a useAuth() hook result.
 export const MOCK_MEMBER = {
-  id:           "mbr_001",
-  firstName:    "Jordan",
-  lastName:     "Rivera",
-  chapter:      "Lincoln High School",
-  state:        "California",
-  memberSince:  "2022",
-  role:         "Chapter Vice President",         // e.g. "Member", "President", "Adviser"
-  avatarInitials: "JR",                           // Used until real avatar images are loaded
-  // avatarUrl: require("../assets/avatar.png"), // Uncomment when you have real assets
+  id:             "mbr_001",
+  firstName:      "Jordan",
+  lastName:       "Rivera",
+  email:          "jordan.rivera@lincolnhs.edu",
+  grade:          "11th Grade",
+  chapter:        "Lincoln High School",
+  chapterId:      "CA-0412",             // Chapter ID shown on the digital member card
+  state:          "California",
+  region:         "Region 4",
+  memberSince:    "2022",               // Year joined FBLA
+  role:           "Chapter Vice President",
+  avatarInitials: "JR",
+  // avatarUrl: require("../assets/avatar.png"), // Uncomment when real assets exist
 } as const;
 
 // ─── Quick Stats (shown on dashboard) ─────────────────────────────────────────
 // Replace with real aggregated data from your backend.
 export const MOCK_STATS = [
-  // { id: "s1", label: "Events Attended",  value: "12",  icon: "checkmark-circle" },
+  { id: "s1", label: "Events Attended",  value: "12",  icon: "checkmark-circle" },
   { id: "s2", label: "Days to NLC",      value: "47",  icon: "timer" },
-  // { id: "s3", label: "Chapter Members",  value: "84",  icon: "people" },
-  // { id: "s4", label: "Points Earned",    value: "320", icon: "star" },
+  { id: "s3", label: "Chapter Members",  value: "84",  icon: "people" },
+  { id: "s4", label: "Points Earned",    value: "320", icon: "star" },
 ] as const;
 
 // ─── Upcoming Events (top 3 shown on dashboard) ───────────────────────────────
@@ -619,5 +626,625 @@ export const MOCK_ALL_EVENTS: CalendarEvent[] = [
     organizer:       "FBLA National",
     registrationUrl: "https://www.fbla-pbl.org/",
     isRegistered:    true,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMMUNITY / SOCIAL DATA
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * The social platforms the chapter has accounts on.
+ * "platform" values are used as filter keys — keep them lowercase, no spaces.
+ * To add a new platform: add it here, add its metadata to SOCIAL_PLATFORM_META,
+ * and add posts with that platform value to MOCK_SOCIAL_POSTS.
+ */
+export type SocialPlatform =
+  | "instagram"
+  | "twitter"
+  | "facebook"
+  | "youtube";
+
+/**
+ * Metadata for each platform — brand color, icon name, display label, and URL scheme.
+ * icon: Ionicons name. For platforms without a specific Ionicons glyph, use "globe-outline".
+ */
+export const SOCIAL_PLATFORM_META: Record<
+  SocialPlatform,
+  {
+    label:       string;
+    color:       string;   // Brand hex color
+    icon:        string;   // Ionicons name
+    urlScheme:   string;   // Used to build the "View on X" deep-link
+  }
+> = {
+  instagram: {
+    label:     "Instagram",
+    color:     "#E1306C",
+    icon:      "logo-instagram",
+    urlScheme: "https://instagram.com/",
+  },
+  twitter: {
+    label:     "X (Twitter)",
+    color:     "#1DA1F2",
+    icon:      "logo-twitter",
+    urlScheme: "https://twitter.com/",
+  },
+  facebook: {
+    label:     "Facebook",
+    color:     "#1877F2",
+    icon:      "logo-facebook",
+    urlScheme: "https://facebook.com/",
+  },
+  youtube: {
+    label:     "YouTube",
+    color:     "#FF0000",
+    icon:      "logo-youtube",
+    urlScheme: "https://youtube.com/",
+  },
+};
+
+/**
+ * A chapter social media account (shown in the "Follow Us" header strip).
+ */
+export interface SocialAccount {
+  id:        string;
+  platform:  SocialPlatform;
+  handle:    string;         // e.g. "@LincolnFBLA"
+  url:       string;         // Full profile URL
+  followers: string;         // Display string: "1.2K", "840", etc.
+}
+
+/**
+ * A single social media post in the unified feed.
+ *
+ * hasImage: true means the card renders an image placeholder block.
+ *   → Replace with a real <Image> component when you have actual post images.
+ *
+ * engagement: likes/comments/shares — shown as social proof below the post text.
+ */
+export interface SocialPost {
+  id:          string;
+  platform:    SocialPlatform;
+  accountId:   string;       // References a SocialAccount.id
+  handle:      string;       // Display handle (may differ from account — e.g. national vs chapter)
+  authorName:  string;       // Display name shown on the post card
+  content:     string;       // Post body text
+  publishedAt: string;       // ISO datetime
+  hasImage:    boolean;      // Whether to render an image block
+  imageLabel?: string;       // Short label shown inside the image placeholder (e.g. "Photo • NLC 2026")
+  imageColor?: string;       // Background color for the placeholder block
+  url:         string;       // Direct link to the post
+  engagement: {
+    likes:    number;
+    comments: number;
+    shares:   number;
+  };
+  isPinned: boolean;         // Pinned posts appear first regardless of sort
+}
+
+// ─── Chapter Social Accounts ─────────────────────────────────────────────────
+// Update handles and URLs to match the real chapter accounts.
+export const MOCK_SOCIAL_ACCOUNTS: SocialAccount[] = [
+  {
+    id:        "acc_ig",
+    platform:  "instagram",
+    handle:    "@LincolnFBLA",
+    url:       "https://instagram.com/",
+    followers: "1.2K",
+  },
+  {
+    id:        "acc_tw",
+    platform:  "twitter",
+    handle:    "@LincolnFBLA",
+    url:       "https://twitter.com/",
+    followers: "840",
+  },
+  {
+    id:        "acc_fb",
+    platform:  "facebook",
+    handle:    "Lincoln HS FBLA",
+    url:       "https://facebook.com/",
+    followers: "2.1K",
+  },
+  {
+    id:        "acc_yt",
+    platform:  "youtube",
+    handle:    "Lincoln HS FBLA",
+    url:       "https://youtube.com/",
+    followers: "310",
+  },
+];
+
+// ─── Social Posts Feed ────────────────────────────────────────────────────────
+// In production: replace with a call to your social media aggregator API
+// (e.g. a backend that caches posts from the Instagram Graph API, Twitter API v2, etc.)
+export const MOCK_SOCIAL_POSTS: SocialPost[] = [
+  // ── Pinned / featured ─────────────────────────────────────────────────────
+  {
+    id:         "post_001",
+    platform:   "instagram",
+    accountId:  "acc_ig",
+    handle:     "@LincolnFBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "🏆 We're heading to NLC 2026 in Atlanta! 8 members qualified across 6 competitive events. So proud of this team. See you in Atlanta! 🇺🇸 #FBLA #NLC2026 #LincolnFBLA",
+    publishedAt: "2026-03-22T16:00:00Z",
+    hasImage:    true,
+    imageLabel:  "Photo • NLC Qualifier Announcement",
+    imageColor:  "#1A3A5C",
+    url:         "https://instagram.com/",
+    engagement:  { likes: 214, comments: 31, shares: 18 },
+    isPinned:    true,
+  },
+  {
+    id:         "post_002",
+    platform:   "twitter",
+    accountId:  "acc_tw",
+    handle:     "@LincolnFBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "Reminder ⏰ — NLC registration closes April 1st at 11:59 PM. If you qualified, make sure your adviser completes registration ASAP. Link in bio! #FBLA #NLC2026",
+    publishedAt: "2026-03-25T09:30:00Z",
+    hasImage:    false,
+    url:         "https://twitter.com/",
+    engagement:  { likes: 47, comments: 8, shares: 22 },
+    isPinned:    true,
+  },
+
+  // ── Regular posts (most recent first) ─────────────────────────────────────
+  {
+    id:         "post_003",
+    platform:   "instagram",
+    accountId:  "acc_ig",
+    handle:     "@LincolnFBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "Gold Seal Chapter of Merit — ACHIEVED! 🥇 Our chapter earned the highest chapter recognition at the Regional Leadership Conference. Thank you to every member who put in the work this year. 💙💛 #FBLA #GoldSeal",
+    publishedAt: "2026-03-16T18:00:00Z",
+    hasImage:    true,
+    imageLabel:  "Photo • Gold Seal Award Ceremony",
+    imageColor:  "#2A1A4A",
+    url:         "https://instagram.com/",
+    engagement:  { likes: 189, comments: 44, shares: 12 },
+    isPinned:    false,
+  },
+  {
+    id:         "post_004",
+    platform:   "facebook",
+    accountId:  "acc_fb",
+    handle:     "Lincoln HS FBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "📣 Applications for FBLA-PBL scholarships are now open! Graduating seniors can apply for awards ranging from $1,000 to $5,000. Deadline is May 15, 2026. Visit the Resources tab in the FBLA Member App or go to fbla-pbl.org to apply.",
+    publishedAt: "2026-03-11T10:00:00Z",
+    hasImage:    false,
+    url:         "https://facebook.com/",
+    engagement:  { likes: 93, comments: 17, shares: 38 },
+    isPinned:    false,
+  },
+  {
+    id:         "post_005",
+    platform:   "youtube",
+    accountId:  "acc_yt",
+    handle:     "Lincoln HS FBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "🎥 NEW VIDEO: Full recap of our Regional Leadership Conference experience — competitions, workshops, networking, and the award ceremony. Watch now!",
+    publishedAt: "2026-03-18T14:00:00Z",
+    hasImage:    true,
+    imageLabel:  "▶  Video • RLC 2026 Recap",
+    imageColor:  "#1A0A0A",
+    url:         "https://youtube.com/",
+    engagement:  { likes: 76, comments: 23, shares: 9 },
+    isPinned:    false,
+  },
+  {
+    id:         "post_006",
+    platform:   "twitter",
+    accountId:  "acc_tw",
+    handle:     "@LincolnFBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "Big congratulations to our Business Plan team — Jordan, Marcus & Priya — for placing 1st at regionals! 🎉 Next stop: State Leadership Conference. #FBLA #BusinessPlan",
+    publishedAt: "2026-03-15T20:00:00Z",
+    hasImage:    false,
+    url:         "https://twitter.com/",
+    engagement:  { likes: 102, comments: 19, shares: 14 },
+    isPinned:    false,
+  },
+  {
+    id:         "post_007",
+    platform:   "instagram",
+    accountId:  "acc_ig",
+    handle:     "@LincolnFBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "Spring Bake Sale is THIS Friday, April 10! 🍪🧁 All proceeds go toward NLC travel costs. Come hungry and support your chapter! Room 204 at lunch.",
+    publishedAt: "2026-04-07T08:00:00Z",
+    hasImage:    true,
+    imageLabel:  "Photo • Spring Bake Sale Flyer",
+    imageColor:  "#2A2A0A",
+    url:         "https://instagram.com/",
+    engagement:  { likes: 61, comments: 9, shares: 5 },
+    isPinned:    false,
+  },
+  {
+    id:         "post_008",
+    platform:   "facebook",
+    accountId:  "acc_fb",
+    handle:     "Lincoln HS FBLA",
+    authorName: "Lincoln HS FBLA",
+    content:
+      "📋 Meeting recap from March 28: We reviewed State Leadership Conference logistics, confirmed event assignments, and voted on the chapter community service project for spring. Minutes are posted to the chapter Google Drive.",
+    publishedAt: "2026-03-28T17:30:00Z",
+    hasImage:    false,
+    url:         "https://facebook.com/",
+    engagement:  { likes: 34, comments: 6, shares: 2 },
+    isPinned:    false,
+  },
+  {
+    id:         "post_009",
+    platform:   "instagram",
+    accountId:  "acc_ig",
+    handle:     "@fbla",
+    authorName: "FBLA-PBL National",
+    content:
+      "The 2026 NLC theme is officially 'Ignite the Future' 🔥 We can't wait to see 12,000+ future business leaders come together in Atlanta this April. Are YOU ready? #FBLA #NLC2026 #IgniteTheFuture",
+    publishedAt: "2026-03-20T12:00:00Z",
+    hasImage:    true,
+    imageLabel:  "Graphic • NLC 2026 Theme Reveal",
+    imageColor:  "#0A1A3A",
+    url:         "https://instagram.com/fbla",
+    engagement:  { likes: 4821, comments: 312, shares: 890 },
+    isPinned:    false,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROFILE DATA
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ─── Competitive Event History ────────────────────────────────────────────────
+/**
+ * A competitive event the member has participated in (current year or past).
+ * `placement` is only set if the member placed — leave undefined if they
+ * did not place or results are not yet available.
+ */
+export interface CompetitiveEventRecord {
+  id:           string;
+  eventName:    string;        // Official FBLA event name
+  year:         string;        // "2025–2026"
+  level:        "chapter" | "region" | "state" | "national";
+  placement?:   number;        // 1st, 2nd, 3rd, etc. — undefined if no placement
+  partners?:    string[];      // Co-competitors for team events
+  isCurrentYear: boolean;      // True → shown in "This Year" section
+}
+
+// Level display metadata
+export const COMPETITION_LEVEL_META: Record<
+  CompetitiveEventRecord["level"],
+  { label: string; color: string }
+> = {
+  chapter:  { label: "Chapter",  color: "#6B7A8D" },
+  region:   { label: "Regional", color: "#22C55E" },
+  state:    { label: "State",    color: "#3B82F6" },
+  national: { label: "National", color: "#FFB81C" },
+};
+
+export const MOCK_COMPETITIVE_EVENTS: CompetitiveEventRecord[] = [
+  // ── Current year (2025–2026) ──────────────────────────────────────────────
+  {
+    id:            "ce_001",
+    eventName:     "Business Plan",
+    year:          "2025–2026",
+    level:         "region",
+    placement:     1,
+    partners:      ["Marcus Chen", "Priya Patel"],
+    isCurrentYear: true,
+  },
+  {
+    id:            "ce_002",
+    eventName:     "Coding & Programming",
+    year:          "2025–2026",
+    level:         "region",
+    placement:     2,
+    isCurrentYear: true,
+  },
+  {
+    id:            "ce_003",
+    eventName:     "Public Speaking",
+    year:          "2025–2026",
+    level:         "region",
+    placement:     undefined,   // Did not place
+    isCurrentYear: true,
+  },
+  // ── Prior years ───────────────────────────────────────────────────────────
+  {
+    id:            "ce_004",
+    eventName:     "Business Plan",
+    year:          "2024–2025",
+    level:         "state",
+    placement:     3,
+    partners:      ["Marcus Chen", "Priya Patel"],
+    isCurrentYear: false,
+  },
+  {
+    id:            "ce_005",
+    eventName:     "Coding & Programming",
+    year:          "2024–2025",
+    level:         "state",
+    placement:     undefined,
+    isCurrentYear: false,
+  },
+  {
+    id:            "ce_006",
+    eventName:     "Introduction to Business",
+    year:          "2023–2024",
+    level:         "region",
+    placement:     1,
+    isCurrentYear: false,
+  },
+];
+
+// ─── Achievement Badges ────────────────────────────────────────────────────────
+/**
+ * An earned achievement badge shown on the profile.
+ * `earnedAt` is optional — some badges (like "Chapter Officer") are role-based
+ * and don't have a specific earn date.
+ *
+ * To add a new badge type: add an entry here. The icon is an Ionicons name.
+ */
+export interface AchievementBadge {
+  id:          string;
+  title:       string;
+  description: string;   // Shown in a tooltip / detail view
+  icon:        string;   // Ionicons name
+  color:       string;   // Badge accent color
+  earnedAt?:   string;   // ISO date or year string
+  isLocked:    boolean;  // True → badge is greyed out (not yet earned — aspirational)
+}
+
+export const MOCK_BADGES: AchievementBadge[] = [
+  {
+    id:          "bdg_001",
+    title:       "NLC Qualifier",
+    description: "Qualified to compete at the National Leadership Conference.",
+    icon:        "trophy",
+    color:       "#FFB81C",
+    earnedAt:    "2026",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_002",
+    title:       "Gold Seal Chapter",
+    description: "Member of a Gold Seal Chapter of Merit — the highest chapter recognition.",
+    icon:        "ribbon",
+    color:       "#FFB81C",
+    earnedAt:    "2026",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_003",
+    title:       "Chapter Officer",
+    description: "Elected or appointed to a chapter officer position.",
+    icon:        "star",
+    color:       "#3B82F6",
+    earnedAt:    "2025",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_004",
+    title:       "Regional Placer",
+    description: "Placed in the top 3 at a Regional Leadership Conference event.",
+    icon:        "medal",
+    color:       "#22C55E",
+    earnedAt:    "2025",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_005",
+    title:       "State Competitor",
+    description: "Competed at the State Leadership Conference.",
+    icon:        "flag",
+    color:       "#8B5CF6",
+    earnedAt:    "2025",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_006",
+    title:       "3-Year Member",
+    description: "Active FBLA member for 3 or more consecutive years.",
+    icon:        "time",
+    color:       "#F59E0B",
+    earnedAt:    "2025",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_007",
+    title:       "Community Service",
+    description: "Completed 20+ hours of FBLA community service projects.",
+    icon:        "heart",
+    color:       "#EF4444",
+    earnedAt:    "2025",
+    isLocked:    false,
+  },
+  {
+    id:          "bdg_008",
+    title:       "National Officer",
+    description: "Elected as a FBLA national officer. (Aspirational)",
+    icon:        "earth",
+    color:       "#6B7A8D",
+    earnedAt:    undefined,
+    isLocked:    true,   // Not yet earned — shown as locked/aspirational
+  },
+];
+
+// ─── Chapter Info ─────────────────────────────────────────────────────────────
+/**
+ * Information about the member's chapter.
+ * In production: GET /chapter/:id
+ */
+export const MOCK_CHAPTER_INFO = {
+  name:           "Lincoln High School FBLA",
+  id:             "CA-0412",
+  adviser:        "Ms. Patricia Chen",
+  adviserEmail:   "p.chen@lincolnhs.edu",
+  school:         "Lincoln High School",
+  city:           "Sacramento",
+  state:          "California",
+  region:         "Region 4",
+  totalMembers:   84,
+  foundedYear:    "2008",
+  websiteUrl:     "https://www.fbla-pbl.org/",
+} as const;
+
+// ─── Settings Sections ────────────────────────────────────────────────────────
+/**
+ * Settings rows are grouped into sections. Each row has an action type:
+ *   "navigate" → push a new screen (route provided)
+ *   "toggle"   → renders a Switch (value provided separately)
+ *   "action"   → fires a callback (e.g. Sign Out, Share Profile)
+ *   "link"     → opens a URL via Linking.openURL
+ *
+ * To add a new setting: append a SettingsRow to the appropriate section,
+ * or add a new section object.
+ */
+export type SettingsActionType = "navigate" | "toggle" | "action" | "link";
+
+export interface SettingsRow {
+  id:          string;
+  label:       string;
+  icon:        string;      // Ionicons name
+  iconColor:   string;      // Background tint for the icon cell
+  actionType:  SettingsActionType;
+  route?:      string;      // For "navigate" type
+  url?:        string;      // For "link" type
+  value?:      boolean;     // For "toggle" type — initial value
+  destructive?: boolean;    // True → label renders in red (e.g. Sign Out)
+}
+
+export interface SettingsSection {
+  id:    string;
+  title: string;
+  rows:  SettingsRow[];
+}
+
+export const MOCK_SETTINGS_SECTIONS: SettingsSection[] = [
+  {
+    id:    "sec_account",
+    title: "Account",
+    rows: [
+      {
+        id:         "set_edit_profile",
+        label:      "Edit Profile",
+        icon:       "person-outline",
+        iconColor:  "#3B82F6",
+        actionType: "action",     // TODO: navigate to EditProfileScreen
+      },
+      {
+        id:         "set_member_card",
+        label:      "Digital Member Card",
+        icon:       "card-outline",
+        iconColor:  "#FFB81C",
+        actionType: "action",     // TODO: show digital ID card modal
+      },
+      {
+        id:         "set_change_password",
+        label:      "Change Password",
+        icon:       "lock-closed-outline",
+        iconColor:  "#8B5CF6",
+        actionType: "action",     // TODO: navigate to ChangePasswordScreen
+      },
+    ],
+  },
+  {
+    id:    "sec_notifications",
+    title: "Notifications",
+    rows: [
+      {
+        id:         "set_notif_events",
+        label:      "Event Reminders",
+        icon:       "calendar-outline",
+        iconColor:  "#22C55E",
+        actionType: "toggle",
+        value:      true,
+      },
+      {
+        id:         "set_notif_news",
+        label:      "News & Announcements",
+        icon:       "newspaper-outline",
+        iconColor:  "#3B82F6",
+        actionType: "toggle",
+        value:      true,
+      },
+      {
+        id:         "set_notif_deadlines",
+        label:      "Deadline Alerts",
+        icon:       "alarm-outline",
+        iconColor:  "#EF4444",
+        actionType: "toggle",
+        value:      true,
+      },
+      {
+        id:         "set_notif_social",
+        label:      "Social Media Posts",
+        icon:       "share-social-outline",
+        iconColor:  "#E1306C",
+        actionType: "toggle",
+        value:      false,
+      },
+    ],
+  },
+  {
+    id:    "sec_about",
+    title: "About",
+    rows: [
+      {
+        id:         "set_fbla_website",
+        label:      "FBLA-PBL Website",
+        icon:       "globe-outline",
+        iconColor:  "#FFB81C",
+        actionType: "link",
+        url:        "https://www.fbla-pbl.org/",
+      },
+      {
+        id:         "set_privacy",
+        label:      "Privacy Policy",
+        icon:       "shield-outline",
+        iconColor:  "#6B7A8D",
+        actionType: "link",
+        url:        "https://www.fbla-pbl.org/",
+      },
+      {
+        id:         "set_terms",
+        label:      "Terms of Service",
+        icon:       "document-text-outline",
+        iconColor:  "#6B7A8D",
+        actionType: "link",
+        url:        "https://www.fbla-pbl.org/",
+      },
+      {
+        id:         "set_version",
+        label:      "App Version 1.0.0",
+        icon:       "information-circle-outline",
+        iconColor:  "#6B7A8D",
+        actionType: "action",    // No-op — just displays version info
+      },
+    ],
+  },
+  {
+    id:    "sec_danger",
+    title: "",   // No visible section title for the danger zone
+    rows: [
+      {
+        id:          "set_signout",
+        label:       "Sign Out",
+        icon:        "log-out-outline",
+        iconColor:   "#EF4444",
+        actionType:  "action",
+        destructive: true,
+      },
+    ],
   },
 ];
