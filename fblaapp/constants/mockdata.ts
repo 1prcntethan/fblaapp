@@ -28,29 +28,29 @@ export type EventType =
 // Used on the Home screen (greeting) and the Profile screen (full detail).
 // Extend this object freely — add fields like `phone`, `grade`, etc.
 // When connecting a real auth system, replace this with a useAuth() hook result.
-export const MOCK_MEMBER = {
+export const MOCK_MEMBER = { 
   id:             "mbr_001",
-  firstName:      "Jordan",
-  lastName:       "Rivera",
-  email:          "jordan.rivera@lincolnhs.edu",
-  grade:          "11th Grade",
-  chapter:        "Lincoln High School",
+  firstName:      "Alexis",
+  lastName:       "Ma",
+  email:          "alexis.ma@mtv.edu",
+  grade:          "12th Grade",
+  chapter:        "Mountain View High School",
   chapterId:      "CA-0412",             // Chapter ID shown on the digital member card
-  state:          "California",
+  state:          "Washington",
   region:         "Region 4",
   memberSince:    "2022",               // Year joined FBLA
   role:           "Chapter Vice President",
-  avatarInitials: "JR",
+  avatarInitials: "AM",
   // avatarUrl: require("../assets/avatar.png"), // Uncomment when real assets exist
 } as const;
 
 // ─── Quick Stats (shown on dashboard) ─────────────────────────────────────────
 // Replace with real aggregated data from your backend.
 export const MOCK_STATS = [
-  { id: "s1", label: "Events Attended",  value: "12",  icon: "checkmark-circle" },
+  // { id: "s1", label: "Events Attended",  value: "12",  icon: "checkmark-circle" },
   { id: "s2", label: "Days to NLC",      value: "47",  icon: "timer" },
-  { id: "s3", label: "Chapter Members",  value: "84",  icon: "people" },
-  { id: "s4", label: "Points Earned",    value: "320", icon: "star" },
+  // { id: "s3", label: "Chapter Members",  value: "84",  icon: "people" },
+  // { id: "s4", label: "Points Earned",    value: "320", icon: "star" },
 ] as const;
 
 // ─── Upcoming Events (top 3 shown on dashboard) ───────────────────────────────
