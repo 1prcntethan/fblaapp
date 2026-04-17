@@ -14,11 +14,11 @@
 export const COLORS = {
   // ── Brand primaries ──────────────────────────────────────────────────────
   navyDark:   "#001D3D",   // Deepest navy — backgrounds, headers
-  navy:       "#003466",   // Core FBLA navy
-  navyLight:  "#0A4A8A",   // Lighter navy — cards, elevated surfaces
-  navyMid:    "#1A2F4E",   // Mid-range navy — subtle backgrounds
+  navy:       "#0a2e7f",   // Core FBLA navy
+  navyLight:  "#14428b",   // Lighter navy — cards, elevated surfaces
+  navyMid:    "#0d234e",   // Mid-range navy — subtle backgrounds
 
-  gold:       "#FFB81C",   // Core FBLA gold — primary accent
+  gold:       "#f4ab19",   // Core FBLA gold — primary accent
   goldLight:  "#FFCD57",   // Lighter gold — hover states, highlights
   goldDark:   "#E09E00",   // Deeper gold — pressed states
 
@@ -38,8 +38,8 @@ export const COLORS = {
 
   // ── UI-specific ───────────────────────────────────────────────────────────
   background:       "#001D3D",   // Main screen background
-  cardBackground:   "#0A2A4A",   // Card / surface background
-  cardBorder:       "#1A3A5C",   // Subtle card border
+  cardBackground:   "#0a2e7f",   // Card / surface background
+  cardBorder:       "#193e94",   // Subtle card border
   tabIconInactive:  "#4A6080",   // Inactive tab icon color
   textPrimary:      "#FFFFFF",
   textSecondary:    "#8FA8C8",   // Muted body text
@@ -54,15 +54,15 @@ export const COLORS = {
 // For now these use system fonts as safe fallbacks; swap in loaded fonts here.
 export const FONTS = {
   // Display / headings — bold, impactful
-  display:  "System",          // Replace with e.g. "Montserrat_800ExtraBold"
+  display:  "Lato",          // Replace with e.g. "Montserrat_800ExtraBold"
   // Headings
-  bold:     "System",          // Replace with e.g. "Montserrat_700Bold"
+  bold:     "Lato",          // Replace with e.g. "Montserrat_700Bold"
   // Body / labels
-  semibold: "System",          // Replace with e.g. "Montserrat_600SemiBold"
-  medium:   "System",          // Replace with e.g. "Montserrat_500Medium"
-  regular:  "System",          // Replace with e.g. "Montserrat_400Regular"
+  semibold: "Lato",          // Replace with e.g. "Montserrat_600SemiBold"
+  medium:   "Lato",          // Replace with e.g. "Montserrat_500Medium"
+  regular:  "Lato",          // Replace with e.g. "Montserrat_400Regular"
   // Numeric / tabular data
-  mono:     "System",          // Replace with e.g. a monospace font
+  mono:     "Lato",          // Replace with e.g. a monospace font
 } as const;
 
 // ─── Font Sizes ───────────────────────────────────────────────────────────────
