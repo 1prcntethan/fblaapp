@@ -640,7 +640,7 @@ export default function EventsScreen() {
           </View>
           {/* Gold decorative accent */}
           <View style={styles.introAccent}>
-            <Ionicons name="library" size={28} color={COLORS.gold} />
+            <Ionicons name="calendar-outline" size={28} color={COLORS.gold} />
           </View>
         </View>
 
