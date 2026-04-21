@@ -72,12 +72,12 @@ const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 // Filter pill options — "all" is the catch-all, rest map to EventType values.
 // To add a new filter: add an entry here AND add its type to EventType in mockData.ts.
 const FILTER_OPTIONS: Array<{ key: "all" | EventType; label: string }> = [
-  { key: "all",         label: "All" },
+  { key: "all", label: "All" },
   { key: "competition", label: "Competitions" },
-  { key: "conference",  label: "Conferences" },
-  { key: "meeting",     label: "Meetings" },
-  { key: "workshop",    label: "Workshops" },
-  { key: "deadline",    label: "Deadlines" },
+  { key: "conference", label: "Conferences" },
+  { key: "meeting", label: "Meetings" },
+  { key: "workshop", label: "Workshops" },
+  { key: "deadline", label: "Deadlines" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -126,7 +126,7 @@ function firstDayOfWeek(year: number, month: number): number {
 // Sub-component: Month Navigator
 // ─────────────────────────────────────────────────────────────────────────────
 interface MonthNavProps {
-  date:   Date;
+  date: Date;
   onPrev: () => void;
   onNext: () => void;
 }
@@ -157,18 +157,23 @@ function MonthNav({ date, onPrev, onNext }: MonthNavProps) {
 // Sub-component: Calendar Grid
 // ─────────────────────────────────────────────────────────────────────────────
 interface CalendarGridProps {
-  year:         number;
-  month:        number;                       // 0-indexed
-  selectedDate: string | null;               // "YYYY-MM-DD" | null
-  eventDates:   Record<string, EventType[]>; // date → event types on that day
-  todayStr:     string;
-  onDayPress:   (dateStr: string) => void;
+  year: number;
+  month: number; // 0-indexed
+  selectedDate: string | null; // "YYYY-MM-DD" | null
+  eventDates: Record<string, EventType[]>; // date → event types on that day
+  todayStr: string;
+  onDayPress: (dateStr: string) => void;
 }
 
 function CalendarGrid({
-  year, month, selectedDate, eventDates, todayStr, onDayPress,
+  year,
+  month,
+  selectedDate,
+  eventDates,
+  todayStr,
+  onDayPress,
 }: CalendarGridProps) {
-  const totalDays   = daysInMonth(year, month);
+  const totalDays = daysInMonth(year, month);
   const startOffset = firstDayOfWeek(year, month);
 
   // Flat array: null = empty cell, number = day of month
@@ -183,7 +188,9 @@ function CalendarGrid({
       {/* Weekday header */}
       <View style={styles.weekdayRow}>
         {WEEKDAY_LABELS.map((label) => (
-          <Text key={label} style={styles.weekdayLabel}>{label}</Text>
+          <Text key={label} style={styles.weekdayLabel}>
+            {label}
+          </Text>
         ))}
       </View>
 
@@ -194,11 +201,11 @@ function CalendarGrid({
             return <View key={`empty-${idx}`} style={styles.dayCell} />;
           }
 
-          const dateStr    = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-          const isToday    = dateStr === todayStr;
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          const isToday = dateStr === todayStr;
           const isSelected = dateStr === selectedDate;
-          const dayEvents  = eventDates[dateStr] ?? [];
-          const hasEvents  = dayEvents.length > 0;
+          const dayEvents = eventDates[dateStr] ?? [];
+          const hasEvents = dayEvents.length > 0;
 
           return (
             <TouchableOpacity
@@ -248,7 +255,7 @@ function CalendarGrid({
 // Sub-component: Filter Pills (horizontal scroll)
 // ─────────────────────────────────────────────────────────────────────────────
 interface FilterPillsProps {
-  active:   "all" | EventType;
+  active: "all" | EventType;
   onChange: (key: "all" | EventType) => void;
 }
 
@@ -261,7 +268,8 @@ function FilterPills({ active, onChange }: FilterPillsProps) {
     >
       {FILTER_OPTIONS.map(({ key, label }) => {
         const isActive = key === active;
-        const color    = key === "all" ? COLORS.gold : EVENT_TYPE_META[key as EventType].color;
+        const color =
+          key === "all" ? COLORS.gold : EVENT_TYPE_META[key as EventType].color;
         return (
           <TouchableOpacity
             key={key}
@@ -272,7 +280,12 @@ function FilterPills({ active, onChange }: FilterPillsProps) {
             onPress={() => onChange(key)}
             activeOpacity={0.75}
           >
-            <Text style={[styles.filterPillText, isActive && styles.filterPillTextActive]}>
+            <Text
+              style={[
+                styles.filterPillText,
+                isActive && styles.filterPillTextActive,
+              ]}
+            >
               {label}
             </Text>
           </TouchableOpacity>
@@ -286,7 +299,7 @@ function FilterPills({ active, onChange }: FilterPillsProps) {
 // Sub-component: Event List Card
 // ─────────────────────────────────────────────────────────────────────────────
 interface EventListCardProps {
-  event:   CalendarEvent;
+  event: CalendarEvent;
   onPress: () => void;
 }
 
@@ -295,7 +308,11 @@ function EventListCard({ event, onPress }: EventListCardProps) {
   const date = parseLocalDate(event.date);
 
   return (
-    <TouchableOpacity style={styles.eventListCard} onPress={onPress} activeOpacity={0.85}>
+    <TouchableOpacity
+      style={styles.eventListCard}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
       {/* Left color bar */}
       <View style={[styles.eventColorBar, { backgroundColor: meta.color }]} />
 
@@ -310,26 +327,48 @@ function EventListCard({ event, onPress }: EventListCardProps) {
       {/* Content */}
       <View style={styles.eventListContent}>
         <View style={styles.eventListBadgeRow}>
-          <View style={[styles.typeBadge, { backgroundColor: meta.color + "22" }]}>
+          <View
+            style={[styles.typeBadge, { backgroundColor: meta.color + "22" }]}
+          >
             <Ionicons name={meta.icon as any} size={10} color={meta.color} />
-            <Text style={[styles.typeBadgeText, { color: meta.color }]}>{meta.label}</Text>
+            <Text style={[styles.typeBadgeText, { color: meta.color }]}>
+              {meta.label}
+            </Text>
           </View>
           {event.isRegistered && (
             <View style={styles.registeredBadge}>
-              <Ionicons name="checkmark-circle" size={10} color={COLORS.success} />
+              <Ionicons
+                name="checkmark-circle"
+                size={10}
+                color={COLORS.success}
+              />
               <Text style={styles.registeredText}>Registered</Text>
             </View>
           )}
         </View>
 
-        <Text style={styles.eventListTitle} numberOfLines={2}>{event.title}</Text>
+        <Text style={styles.eventListTitle} numberOfLines={2}>
+          {event.title}
+        </Text>
 
         <View style={styles.eventListMeta}>
-          <Ionicons name="time-outline" size={12} color={COLORS.textSecondary} />
-          <Text style={styles.eventListMetaText}>{event.allDay ? "All Day" : event.time}</Text>
+          <Ionicons
+            name="time-outline"
+            size={12}
+            color={COLORS.textSecondary}
+          />
+          <Text style={styles.eventListMetaText}>
+            {event.allDay ? "All Day" : event.time}
+          </Text>
           <View style={styles.metaDot} />
-          <Ionicons name="location-outline" size={12} color={COLORS.textSecondary} />
-          <Text style={styles.eventListMetaText} numberOfLines={1}>{event.location}</Text>
+          <Ionicons
+            name="location-outline"
+            size={12}
+            color={COLORS.textSecondary}
+          />
+          <Text style={styles.eventListMetaText} numberOfLines={1}>
+            {event.location}
+          </Text>
         </View>
       </View>
 
@@ -355,9 +394,13 @@ function EventListCard({ event, onPress }: EventListCardProps) {
 // Sub-component: Detail Sheet — row helper
 // ─────────────────────────────────────────────────────────────────────────────
 function SheetDetailRow({
-  icon, label, children,
+  icon,
+  label,
+  children,
 }: {
-  icon: string; label: string; children: React.ReactNode;
+  icon: string;
+  label: string;
+  children: React.ReactNode;
 }) {
   return (
     <View style={styles.sheetDetailRow}>
@@ -376,7 +419,7 @@ function SheetDetailRow({
 // Sub-component: Event Detail Bottom Sheet
 // ─────────────────────────────────────────────────────────────────────────────
 interface EventDetailSheetProps {
-  event:   CalendarEvent | null;
+  event: CalendarEvent | null;
   visible: boolean;
   onClose: () => void;
 }
@@ -407,7 +450,11 @@ function EventDetailSheet({ event, visible, onClose }: EventDetailSheetProps) {
       statusBarTranslucent={true}
     >
       {/* Backdrop */}
-      <TouchableOpacity style={styles.sheetBackdrop} activeOpacity={1} onPress={onClose} />
+      <TouchableOpacity
+        style={styles.sheetBackdrop}
+        activeOpacity={1}
+        onPress={onClose}
+      />
 
       {/* Panel */}
       <View style={styles.sheetPanel}>
@@ -419,9 +466,16 @@ function EventDetailSheet({ event, visible, onClose }: EventDetailSheetProps) {
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Type badge */}
-          <View style={[styles.sheetTypeBadge, { backgroundColor: meta.color + "22" }]}>
+          <View
+            style={[
+              styles.sheetTypeBadge,
+              { backgroundColor: meta.color + "22" },
+            ]}
+          >
             <Ionicons name={meta.icon as any} size={13} color={meta.color} />
-            <Text style={[styles.sheetTypeBadgeText, { color: meta.color }]}>{meta.label}</Text>
+            <Text style={[styles.sheetTypeBadgeText, { color: meta.color }]}>
+              {meta.label}
+            </Text>
           </View>
 
           {/* Title */}
@@ -454,7 +508,11 @@ function EventDetailSheet({ event, visible, onClose }: EventDetailSheetProps) {
           <View style={styles.sheetStatusRow}>
             {event.isRegistered && (
               <View style={styles.registeredChip}>
-                <Ionicons name="checkmark-circle" size={14} color={COLORS.success} />
+                <Ionicons
+                  name="checkmark-circle"
+                  size={14}
+                  color={COLORS.success}
+                />
                 <Text style={styles.registeredChipText}>You're registered</Text>
               </View>
             )}
@@ -469,12 +527,24 @@ function EventDetailSheet({ event, visible, onClose }: EventDetailSheetProps) {
           {/* Action buttons */}
           <View style={styles.sheetActions}>
             {!event.isRegistered && event.registrationUrl && (
-              <TouchableOpacity style={styles.btnPrimary} onPress={handleRegister} activeOpacity={0.85}>
-                <Ionicons name="open-outline" size={16} color={COLORS.navyDark} />
+              <TouchableOpacity
+                style={styles.btnPrimary}
+                onPress={handleRegister}
+                activeOpacity={0.85}
+              >
+                <Ionicons
+                  name="open-outline"
+                  size={16}
+                  color={COLORS.navyDark}
+                />
                 <Text style={styles.btnPrimaryText}>Register Now</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity style={styles.btnSecondary} onPress={handleAddToCalendar} activeOpacity={0.85}>
+            <TouchableOpacity
+              style={styles.btnSecondary}
+              onPress={handleAddToCalendar}
+              activeOpacity={0.85}
+            >
               <Ionicons name="calendar-outline" size={16} color={COLORS.gold} />
               <Text style={styles.btnSecondaryText}>Add to Calendar</Text>
             </TouchableOpacity>
@@ -491,12 +561,12 @@ function EventDetailSheet({ event, visible, onClose }: EventDetailSheetProps) {
 // Main Screen
 // ─────────────────────────────────────────────────────────────────────────────
 export default function EventsScreen() {
-  const today    = new Date();
+  const today = new Date();
   const todayStr = toISOLocal(today);
 
   // The month shown in the calendar
   const [viewingMonth, setViewingMonth] = useState<Date>(
-    new Date(today.getFullYear(), today.getMonth(), 1)
+    new Date(today.getFullYear(), today.getMonth(), 1),
   );
   // Tapped day; null = show all events in the month
   const [selectedDate, setSelectedDate] = useState<string | null>(todayStr);
@@ -508,11 +578,15 @@ export default function EventsScreen() {
 
   // Month navigation
   function goToPrevMonth() {
-    setViewingMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    setViewingMonth(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
+    );
     setSelectedDate(null);
   }
   function goToNextMonth() {
-    setViewingMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    setViewingMonth(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
+    );
     setSelectedDate(null);
   }
 
@@ -535,15 +609,13 @@ export default function EventsScreen() {
   const filteredEvents = useMemo<CalendarEvent[]>(() => {
     const y = viewingMonth.getFullYear();
     const m = viewingMonth.getMonth();
-    return MOCK_ALL_EVENTS
-      .filter((evt) => {
-        const d = parseLocalDate(evt.date);
-        if (d.getFullYear() !== y || d.getMonth() !== m) return false;
-        if (selectedDate && evt.date !== selectedDate) return false;
-        if (activeFilter !== "all" && evt.type !== activeFilter) return false;
-        return true;
-      })
-      .sort((a, b) => a.date.localeCompare(b.date));
+    return MOCK_ALL_EVENTS.filter((evt) => {
+      const d = parseLocalDate(evt.date);
+      if (d.getFullYear() !== y || d.getMonth() !== m) return false;
+      if (selectedDate && evt.date !== selectedDate) return false;
+      if (activeFilter !== "all" && evt.type !== activeFilter) return false;
+      return true;
+    }).sort((a, b) => a.date.localeCompare(b.date));
   }, [viewingMonth, selectedDate, activeFilter]);
 
   // Section heading for the event list
@@ -561,8 +633,25 @@ export default function EventsScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        <View style={styles.introRow}>
+          <View>
+            <Text style={styles.introTitle}>Event & Calendar</Text>
+            <Text style={styles.introSub}></Text>
+          </View>
+          {/* Gold decorative accent */}
+          <View style={styles.introAccent}>
+            <Ionicons name="library" size={28} color={COLORS.gold} />
+          </View>
+        </View>
+
+        <View style={styles.goldBar} />
+
         {/* Month Navigator */}
-        <MonthNav date={viewingMonth} onPrev={goToPrevMonth} onNext={goToNextMonth} />
+        <MonthNav
+          date={viewingMonth}
+          onPrev={goToPrevMonth}
+          onNext={goToNextMonth}
+        />
 
         {/* Calendar Grid */}
         <CalendarGrid
@@ -583,7 +672,9 @@ export default function EventsScreen() {
         {/* Event List */}
         <View style={styles.listSection}>
           <View style={styles.listHeadingRow}>
-            <Text style={styles.listHeading} numberOfLines={1}>{listHeading}</Text>
+            <Text style={styles.listHeading} numberOfLines={1}>
+              {listHeading}
+            </Text>
             {selectedDate && (
               <TouchableOpacity
                 onPress={() => setSelectedDate(null)}
@@ -595,12 +686,17 @@ export default function EventsScreen() {
           </View>
 
           <Text style={styles.eventCount}>
-            {filteredEvents.length} event{filteredEvents.length !== 1 ? "s" : ""}
+            {filteredEvents.length} event
+            {filteredEvents.length !== 1 ? "s" : ""}
           </Text>
 
           {filteredEvents.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="calendar-outline" size={40} color={COLORS.textMuted} />
+              <Ionicons
+                name="calendar-outline"
+                size={40}
+                color={COLORS.textMuted}
+              />
               <Text style={styles.emptyStateText}>No events found</Text>
               <Text style={styles.emptyStateSub}>
                 {selectedDate
@@ -613,7 +709,10 @@ export default function EventsScreen() {
               <EventListCard
                 key={evt.id}
                 event={evt}
-                onPress={() => { setDetailEvent(evt); setSheetVisible(true); }}
+                onPress={() => {
+                  setDetailEvent(evt);
+                  setSheetVisible(true);
+                }}
               />
             ))
           )}
@@ -637,9 +736,39 @@ export default function EventsScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
-  scroll:   { flex: 1 },
+  scroll: { flex: 1 },
   scrollContent: { paddingBottom: SPACING.xl },
 
+  // ── Intro header ──────────────────────────────────────────────────────────
+  introRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.sm,
+  },
+  introTitle: {
+    fontSize: FONT_SIZE["2xl"],
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    fontWeight: "700",
+  },
+  introSub: {
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+    fontWeight: "400",
+  },
+  introAccent: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.gold + "18",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   // Month Nav
   monthNav: {
     flexDirection: "row",
@@ -650,15 +779,21 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.md,
   },
   navArrow: {
-    width: 36, height: 36,
+    width: 36,
+    height: 36,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.cardBackground,
-    borderWidth: 1, borderColor: COLORS.cardBorder,
-    alignItems: "center", justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
+    alignItems: "center",
+    justifyContent: "center",
   },
   monthTitle: {
-    fontSize: FONT_SIZE.xl, fontFamily: FONTS.bold,
-    color: COLORS.textPrimary, fontWeight: "700", letterSpacing: 0.3,
+    fontSize: FONT_SIZE.xl,
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
 
   // Calendar Grid
@@ -666,39 +801,52 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING.lg,
     backgroundColor: COLORS.cardBackground,
     borderRadius: RADIUS.xl,
-    borderWidth: 1, borderColor: COLORS.cardBorder,
+    borderWidth: 1,
+    alignSelf: "center",
+    borderColor: COLORS.cardBorder,
     padding: SPACING.md,
     ...SHADOWS.card,
   },
   weekdayRow: { flexDirection: "row", marginBottom: SPACING.sm },
   weekdayLabel: {
-    flex: 1, textAlign: "center",
-    fontSize: FONT_SIZE.xs, fontFamily: FONTS.semibold,
-    color: COLORS.textMuted, fontWeight: "600", letterSpacing: 0.5,
+    flex: 1,
+    textAlign: "center",
+    fontSize: FONT_SIZE.xs,
+    fontFamily: FONTS.semibold,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
   daysGrid: { flexDirection: "row", flexWrap: "wrap" },
   dayCell: {
     width: "14.285714%",
     aspectRatio: 1,
-    alignItems: "center", justifyContent: "center",
-    borderRadius: RADIUS.full, paddingVertical: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: RADIUS.full,
+    paddingVertical: 2,
   },
   dayCellSelected: { backgroundColor: COLORS.gold },
   dayCellToday: { borderWidth: 1.5, borderColor: COLORS.gold },
   dayNumber: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.medium,
-    color: COLORS.textPrimary, fontWeight: "500",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.medium,
+    color: COLORS.textPrimary,
+    fontWeight: "500",
   },
   dayNumberSelected: { color: COLORS.navyDark, fontWeight: "700" },
-  dayNumberToday:    { color: COLORS.gold, fontWeight: "700" },
+  dayNumberToday: { color: COLORS.gold, fontWeight: "700" },
   dotRow: { flexDirection: "row", gap: 2, marginTop: 2 },
   eventDot: { width: 4, height: 4, borderRadius: RADIUS.full },
 
   // Separator
   goldBar: {
-    height: 2, backgroundColor: COLORS.gold,
-    marginHorizontal: SPACING.lg, marginTop: SPACING.lg,
-    borderRadius: RADIUS.full, opacity: 0.5,
+    height: 2,
+    backgroundColor: COLORS.gold,
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.lg,
+    borderRadius: RADIUS.full,
+    opacity: 0.5,
   },
 
   // Filters
@@ -712,32 +860,45 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs + 2,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.cardBackground,
-    borderWidth: 1, borderColor: COLORS.cardBorder,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
   },
   filterPillText: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.medium,
-    color: COLORS.textSecondary, fontWeight: "500",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.medium,
+    color: COLORS.textSecondary,
+    fontWeight: "500",
   },
   filterPillTextActive: { color: COLORS.navyDark, fontWeight: "700" },
 
   // Event List
   listSection: { paddingHorizontal: SPACING.lg },
   listHeadingRow: {
-    flexDirection: "row", alignItems: "center",
-    justifyContent: "space-between", marginBottom: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 2,
   },
   listHeading: {
-    fontSize: FONT_SIZE.lg, fontFamily: FONTS.bold,
-    color: COLORS.textPrimary, fontWeight: "700",
-    flex: 1, marginRight: SPACING.sm,
+    fontSize: FONT_SIZE.lg,
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    fontWeight: "700",
+    flex: 1,
+    marginRight: SPACING.sm,
   },
   clearText: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.medium,
-    color: COLORS.gold, fontWeight: "600",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.medium,
+    color: COLORS.gold,
+    fontWeight: "600",
   },
   eventCount: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.regular,
-    color: COLORS.textMuted, marginBottom: SPACING.md, fontWeight: "400",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textMuted,
+    marginBottom: SPACING.md,
+    fontWeight: "400",
   },
 
   // Event List Card
@@ -745,193 +906,309 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: COLORS.cardBackground,
     borderRadius: RADIUS.lg,
-    borderWidth: 1, borderColor: COLORS.cardBorder,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
     marginBottom: SPACING.md,
     overflow: "hidden",
     ...SHADOWS.card,
   },
   eventColorBar: { width: 4 },
   eventListDate: {
-    width: 52, alignItems: "center", justifyContent: "center",
+    width: 52,
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: SPACING.md,
-    borderRightWidth: 1, borderRightColor: COLORS.cardBorder,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.cardBorder,
   },
   eventListDateMonth: {
-    fontSize: FONT_SIZE.xs, fontFamily: FONTS.bold,
-    color: COLORS.gold, fontWeight: "700", letterSpacing: 0.5,
+    fontSize: FONT_SIZE.xs,
+    fontFamily: FONTS.bold,
+    color: COLORS.gold,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
   eventListDateDay: {
-    fontSize: FONT_SIZE["2xl"], fontFamily: FONTS.bold,
-    color: COLORS.textPrimary, fontWeight: "700", lineHeight: 28,
+    fontSize: FONT_SIZE["2xl"],
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    fontWeight: "700",
+    lineHeight: 28,
   },
   eventListContent: { flex: 1, padding: SPACING.md },
   eventListBadgeRow: {
-    flexDirection: "row", alignItems: "center",
-    gap: SPACING.sm, marginBottom: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+    marginBottom: 6,
   },
   typeBadge: {
-    flexDirection: "row", alignItems: "center", gap: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.sm, paddingVertical: 3,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 3,
   },
   typeBadgeText: {
-    fontSize: FONT_SIZE.xs, fontFamily: FONTS.semibold,
-    fontWeight: "600", letterSpacing: 0.2,
+    fontSize: FONT_SIZE.xs,
+    fontFamily: FONTS.semibold,
+    fontWeight: "600",
+    letterSpacing: 0.2,
   },
   registeredBadge: {
-    flexDirection: "row", alignItems: "center", gap: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
     backgroundColor: COLORS.success + "20",
     borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.sm, paddingVertical: 3,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 3,
   },
   registeredText: {
-    fontSize: FONT_SIZE.xs, fontFamily: FONTS.semibold,
-    color: COLORS.success, fontWeight: "600",
+    fontSize: FONT_SIZE.xs,
+    fontFamily: FONTS.semibold,
+    color: COLORS.success,
+    fontWeight: "600",
   },
   eventListTitle: {
-    fontSize: FONT_SIZE.md, fontFamily: FONTS.semibold,
-    color: COLORS.textPrimary, fontWeight: "600",
-    lineHeight: 20, marginBottom: 4,
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.semibold,
+    color: COLORS.textPrimary,
+    fontWeight: "600",
+    lineHeight: 20,
+    marginBottom: 4,
   },
   eventListMeta: {
-    flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "nowrap",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    flexWrap: "nowrap",
   },
   eventListMetaText: {
-    fontSize: FONT_SIZE.xs, fontFamily: FONTS.regular,
-    color: COLORS.textSecondary, fontWeight: "400", flexShrink: 1,
+    fontSize: FONT_SIZE.xs,
+    fontFamily: FONTS.regular,
+    color: COLORS.textSecondary,
+    fontWeight: "400",
+    flexShrink: 1,
   },
   metaDot: {
-    width: 3, height: 3, borderRadius: RADIUS.full,
-    backgroundColor: COLORS.textMuted, marginHorizontal: 2,
+    width: 3,
+    height: 3,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.textMuted,
+    marginHorizontal: 2,
   },
   eventListRight: {
-    paddingHorizontal: SPACING.md, paddingVertical: SPACING.md,
-    alignItems: "center", justifyContent: "center",
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // Empty state
   emptyState: {
-    alignItems: "center", paddingVertical: SPACING["3xl"], gap: SPACING.sm,
+    alignItems: "center",
+    paddingVertical: SPACING["3xl"],
+    gap: SPACING.sm,
   },
   emptyStateText: {
-    fontSize: FONT_SIZE.lg, fontFamily: FONTS.semibold,
-    color: COLORS.textSecondary, fontWeight: "600",
+    fontSize: FONT_SIZE.lg,
+    fontFamily: FONTS.semibold,
+    color: COLORS.textSecondary,
+    fontWeight: "600",
   },
   emptyStateSub: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.regular,
-    color: COLORS.textMuted, textAlign: "center", fontWeight: "400",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    fontWeight: "400",
   },
 
   // Bottom Sheet
   sheetBackdrop: { flex: 1, backgroundColor: COLORS.overlay },
   sheetPanel: {
-    position: "absolute", bottom: 0, left: 0, right: 0,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: COLORS.cardBackground,
-    borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl,
-    borderTopWidth: 1, borderTopColor: COLORS.cardBorder,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.cardBorder,
     maxHeight: "85%",
-    paddingHorizontal: SPACING.lg, paddingTop: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
     ...SHADOWS.elevated,
   },
   sheetHandle: {
-    width: 40, height: 4,
+    width: 40,
+    height: 4,
     backgroundColor: COLORS.cardBorder,
     borderRadius: RADIUS.full,
-    alignSelf: "center", marginBottom: SPACING.md,
+    alignSelf: "center",
+    marginBottom: SPACING.md,
   },
   sheetClose: {
-    position: "absolute", top: SPACING.md, right: SPACING.lg,
-    width: 32, height: 32,
-    alignItems: "center", justifyContent: "center", zIndex: 10,
+    position: "absolute",
+    top: SPACING.md,
+    right: SPACING.lg,
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
   },
   sheetTypeBadge: {
-    flexDirection: "row", alignItems: "center", alignSelf: "flex-start",
-    gap: 5, borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs,
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    gap: 5,
+    borderRadius: RADIUS.full,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
     marginBottom: SPACING.sm,
   },
   sheetTypeBadgeText: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.semibold, fontWeight: "600", letterSpacing: 0.3,
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.semibold,
+    fontWeight: "600",
+    letterSpacing: 0.3,
   },
   sheetTitle: {
-    fontSize: FONT_SIZE["2xl"], fontFamily: FONTS.bold,
-    color: COLORS.textPrimary, fontWeight: "700",
-    lineHeight: 30, marginBottom: SPACING.md,
+    fontSize: FONT_SIZE["2xl"],
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    fontWeight: "700",
+    lineHeight: 30,
+    marginBottom: SPACING.md,
     paddingRight: SPACING["2xl"],
   },
   sheetDivider: {
-    height: 2, backgroundColor: COLORS.gold,
+    height: 2,
+    backgroundColor: COLORS.gold,
     marginBottom: SPACING.lg,
-    borderRadius: RADIUS.full, opacity: 0.5, width: 48,
+    borderRadius: RADIUS.full,
+    opacity: 0.5,
+    width: 48,
   },
   sheetDetailList: { gap: SPACING.md, marginBottom: SPACING.lg },
-  sheetDetailRow: { flexDirection: "row", alignItems: "flex-start", gap: SPACING.md },
+  sheetDetailRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: SPACING.md,
+  },
   sheetDetailIconWrap: {
-    width: 32, height: 32, borderRadius: RADIUS.md,
+    width: 32,
+    height: 32,
+    borderRadius: RADIUS.md,
     backgroundColor: COLORS.gold + "18",
-    alignItems: "center", justifyContent: "center", flexShrink: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
   },
   sheetDetailText: { flex: 1, justifyContent: "center" },
   sheetDetailLabel: {
-    fontSize: FONT_SIZE.xs, fontFamily: FONTS.medium,
-    color: COLORS.textMuted, fontWeight: "500",
-    letterSpacing: 0.4, textTransform: "uppercase", marginBottom: 2,
+    fontSize: FONT_SIZE.xs,
+    fontFamily: FONTS.medium,
+    color: COLORS.textMuted,
+    fontWeight: "500",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+    marginBottom: 2,
   },
   sheetDetailValue: {
-    fontSize: FONT_SIZE.md, fontFamily: FONTS.regular,
-    color: COLORS.textPrimary, fontWeight: "400", lineHeight: 20,
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.regular,
+    color: COLORS.textPrimary,
+    fontWeight: "400",
+    lineHeight: 20,
   },
   sheetDescHeading: {
-    fontSize: FONT_SIZE.md, fontFamily: FONTS.semibold,
-    color: COLORS.textPrimary, fontWeight: "600", marginBottom: SPACING.sm,
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.semibold,
+    color: COLORS.textPrimary,
+    fontWeight: "600",
+    marginBottom: SPACING.sm,
   },
   sheetDescription: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.regular,
-    color: COLORS.textSecondary, lineHeight: 20,
-    fontWeight: "400", marginBottom: SPACING.lg,
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+    fontWeight: "400",
+    marginBottom: SPACING.lg,
   },
   sheetStatusRow: {
-    flexDirection: "row", gap: SPACING.sm, marginBottom: SPACING.lg, flexWrap: "wrap",
+    flexDirection: "row",
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+    flexWrap: "wrap",
   },
   registeredChip: {
-    flexDirection: "row", alignItems: "center", gap: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     backgroundColor: COLORS.success + "18",
     borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
   },
   registeredChipText: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.semibold,
-    color: COLORS.success, fontWeight: "600",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.semibold,
+    color: COLORS.success,
+    fontWeight: "600",
   },
   reminderChip: {
-    flexDirection: "row", alignItems: "center", gap: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     backgroundColor: COLORS.gold + "18",
     borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
   },
   reminderChipText: {
-    fontSize: FONT_SIZE.sm, fontFamily: FONTS.semibold,
-    color: COLORS.gold, fontWeight: "600",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.semibold,
+    color: COLORS.gold,
+    fontWeight: "600",
   },
   sheetActions: { gap: SPACING.sm },
   btnPrimary: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: SPACING.sm, backgroundColor: COLORS.gold,
-    borderRadius: RADIUS.lg, paddingVertical: SPACING.md + 2,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACING.sm,
+    backgroundColor: COLORS.gold,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.md + 2,
     ...SHADOWS.goldGlow,
   },
   btnPrimaryText: {
-    fontSize: FONT_SIZE.md, fontFamily: FONTS.bold,
-    color: COLORS.navyDark, fontWeight: "700",
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.bold,
+    color: COLORS.navyDark,
+    fontWeight: "700",
   },
   btnSecondary: {
-    flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: SPACING.sm, backgroundColor: COLORS.cardBackground,
-    borderRadius: RADIUS.lg, paddingVertical: SPACING.md + 2,
-    borderWidth: 1.5, borderColor: COLORS.gold,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACING.sm,
+    backgroundColor: COLORS.cardBackground,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.md + 2,
+    borderWidth: 1.5,
+    borderColor: COLORS.gold,
   },
   btnSecondaryText: {
-    fontSize: FONT_SIZE.md, fontFamily: FONTS.bold,
-    color: COLORS.gold, fontWeight: "700",
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.bold,
+    color: COLORS.gold,
+    fontWeight: "700",
   },
 });

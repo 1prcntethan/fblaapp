@@ -311,12 +311,7 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
     <View style={[styles.postCard, post.isPinned && styles.postCardPinned]}>
 
       {/* ── Pinned indicator ─────────────────────────────────────────────── */}
-      {post.isPinned && (
-        <View style={styles.pinnedRow}>
-          <Ionicons name="pin" size={12} color={COLORS.gold} />
-          <Text style={styles.pinnedLabel}>Pinned post</Text>
-        </View>
-      )}
+      
 
       {/* ── Platform color bar (left edge) ───────────────────────────────── */}
       <View style={[styles.platformBar, { backgroundColor: meta.color }]} />

@@ -32,7 +32,7 @@ type IoniconsName = React.ComponentProps<typeof Ionicons>["name"];
 function TabIcon({
   name,
   focused,
-}: {
+} : {
   name: IoniconsName;
   focused: boolean;
 }) {
@@ -105,7 +105,12 @@ export default function RootLayout() {
         name="events"
         options={{
           title: "Events",
-          headerTitle: "Events & Calendar",
+          headerTitle: () => (
+            <Image
+              source={require("../assets/images/fblalogowhite.png")}
+              style={{ width: 80, height: 40, resizeMode: "contain" }}
+            />
+          ),
           tabBarIcon: ({ focused }) => (
             <TabIcon
               name={focused ? "calendar" : "calendar-outline"}
@@ -120,7 +125,12 @@ export default function RootLayout() {
         name="resources"
         options={{
           title: "Resources",
-          headerTitle: "Resources",
+          headerTitle: () => (
+            <Image
+              source={require("../assets/images/fblalogowhite.png")}
+              style={{ width: 80, height: 40, resizeMode: "contain" }}
+            />
+          ),
           tabBarIcon: ({ focused }) => (
             <TabIcon
               name={focused ? "library" : "library-outline"}
@@ -135,7 +145,12 @@ export default function RootLayout() {
         name="community"
         options={{
           title: "Community",
-          headerTitle: "Community",
+          headerTitle: () => (
+            <Image
+              source={require("../assets/images/fblalogowhite.png")}
+              style={{ width: 80, height: 40, resizeMode: "contain" }}
+            />
+          ),
           tabBarIcon: ({ focused }) => (
             <TabIcon
               name={focused ? "people" : "people-outline"}
