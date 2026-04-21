@@ -54,15 +54,15 @@ export const COLORS = {
 // For now these use system fonts as safe fallbacks; swap in loaded fonts here.
 export const FONTS = {
   // Display / headings — bold, impactful
-  display:  "Lato",          // Replace with e.g. "Montserrat_800ExtraBold"
+  display:  "System",          // Replace with e.g. "Montserrat_800ExtraBold"
   // Headings
-  bold:     "Lato",          // Replace with e.g. "Montserrat_700Bold"
+  bold:     "System",          // Replace with e.g. "Montserrat_700Bold"
   // Body / labels
-  semibold: "Lato",          // Replace with e.g. "Montserrat_600SemiBold"
-  medium:   "Lato",          // Replace with e.g. "Montserrat_500Medium"
-  regular:  "Lato",          // Replace with e.g. "Montserrat_400Regular"
+  semibold: "System",          // Replace with e.g. "Montserrat_600SemiBold"
+  medium:   "System",          // Replace with e.g. "Montserrat_500Medium"
+  regular:  "System",          // Replace with e.g. "Montserrat_400Regular"
   // Numeric / tabular data
-  mono:     "Lato",          // Replace with e.g. a monospace font
+  mono:     "System",          // Replace with e.g. a monospace font
 } as const;
 
 // ─── Font Sizes ───────────────────────────────────────────────────────────────
