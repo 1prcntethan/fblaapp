@@ -384,7 +384,7 @@ export default function HomeScreen() {
           <SectionHeader
             title="News & Announcements"
             onSeeAll={() => {
-              /* TODO: router.push("/news") — full news list screen */
+              router.push("/community")
             }}
           />
           {MOCK_NEWS.map((item) => (
