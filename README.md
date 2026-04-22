@@ -47,7 +47,7 @@ The app was designed using Figma for wireframing and UI prototyping.
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone (https://github.com/1prcntethan/fblaapp/tree/main)
    cd fblaapp
    ```
 
