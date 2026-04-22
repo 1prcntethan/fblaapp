@@ -55,13 +55,13 @@ import {
   SPACING,
   RADIUS,
   SHADOWS,
-} from "../constants/theme";
+} from "../../constants/theme";
 import {
   MOCK_ALL_EVENTS,
   EVENT_TYPE_META,
   type CalendarEvent,
   type EventType,
-} from "../constants/mockdata";
+} from "../../constants/mockdata";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants & Config

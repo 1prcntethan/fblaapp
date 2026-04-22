@@ -38,7 +38,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-import { COLORS, FONTS, FONT_SIZE, SPACING, RADIUS, SHADOWS } from "../constants/theme";
+import {
+  COLORS,
+  FONTS,
+  FONT_SIZE,
+  SPACING,
+  RADIUS,
+  SHADOWS,
+} from "../../constants/theme";
 import {
   MOCK_MEMBER,
   MOCK_STATS,
@@ -48,7 +55,7 @@ import {
   EVENT_TYPE_META,
   type UpcomingEvent,
   type NewsItem,
-} from "../constants/mockdata";
+} from "../../constants/mockdata";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Utility: time-of-day greeting
@@ -78,7 +85,7 @@ function timeAgo(isoDatetime: string): string {
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
-  if (days < 7)  return `${days} days ago`;
+  if (days < 7) return `${days} days ago`;
   const weeks = Math.floor(days / 7);
   return `${weeks}w ago`;
 }
@@ -96,7 +103,10 @@ function SectionHeader({ title, onSeeAll }: SectionHeaderProps) {
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {onSeeAll && (
-        <TouchableOpacity onPress={onSeeAll} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={onSeeAll}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <Text style={styles.seeAllText}>See All</Text>
         </TouchableOpacity>
       )}
@@ -137,13 +147,19 @@ interface EventCardProps {
 }
 
 function EventCard({ event, onPress }: EventCardProps) {
-  const meta  = EVENT_TYPE_META[event.type];
-  const date  = new Date(event.date);
-  const month = date.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
-  const day   = date.getDate();
+  const meta = EVENT_TYPE_META[event.type];
+  const date = new Date(event.date);
+  const month = date
+    .toLocaleDateString("en-US", { month: "short" })
+    .toUpperCase();
+  const day = date.getDate();
 
   return (
-    <TouchableOpacity style={styles.eventCard} onPress={onPress} activeOpacity={0.85}>
+    <TouchableOpacity
+      style={styles.eventCard}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
       {/* Left: date block */}
       <View style={styles.eventDateBlock}>
         <Text style={styles.eventDateMonth}>{month}</Text>
@@ -153,19 +169,35 @@ function EventCard({ event, onPress }: EventCardProps) {
       {/* Right: event details */}
       <View style={styles.eventInfo}>
         {/* Type badge */}
-        <View style={[styles.eventBadge, { backgroundColor: meta.color + "22" }]}>
+        <View
+          style={[styles.eventBadge, { backgroundColor: meta.color + "22" }]}
+        >
           <Ionicons name={meta.icon as any} size={10} color={meta.color} />
-          <Text style={[styles.eventBadgeText, { color: meta.color }]}>{meta.label}</Text>
+          <Text style={[styles.eventBadgeText, { color: meta.color }]}>
+            {meta.label}
+          </Text>
         </View>
-        <Text style={styles.eventTitle} numberOfLines={2}>{event.title}</Text>
+        <Text style={styles.eventTitle} numberOfLines={2}>
+          {event.title}
+        </Text>
         {/* Location row */}
         <View style={styles.eventMeta}>
-          <Ionicons name="location-outline" size={12} color={COLORS.textSecondary} />
-          <Text style={styles.eventMetaText} numberOfLines={1}>{event.location}</Text>
+          <Ionicons
+            name="location-outline"
+            size={12}
+            color={COLORS.textSecondary}
+          />
+          <Text style={styles.eventMetaText} numberOfLines={1}>
+            {event.location}
+          </Text>
         </View>
         {/* Time row */}
         <View style={styles.eventMeta}>
-          <Ionicons name="time-outline" size={12} color={COLORS.textSecondary} />
+          <Ionicons
+            name="time-outline"
+            size={12}
+            color={COLORS.textSecondary}
+          />
           <Text style={styles.eventMetaText}>{event.time}</Text>
         </View>
       </View>
@@ -204,7 +236,12 @@ function NewsCard({ item, onPress }: NewsCardProps) {
       <View style={styles.newsContent}>
         {/* Top row: category badge + timestamp + unread dot */}
         <View style={styles.newsTopRow}>
-          <View style={[styles.newsBadge, { backgroundColor: catMeta.color + "22" }]}>
+          <View
+            style={[
+              styles.newsBadge,
+              { backgroundColor: catMeta.color + "22" },
+            ]}
+          >
             <Text style={[styles.newsBadgeText, { color: catMeta.color }]}>
               {catMeta.label}
             </Text>
@@ -216,7 +253,10 @@ function NewsCard({ item, onPress }: NewsCardProps) {
         </View>
 
         {/* Headline */}
-        <Text style={[styles.newsTitle, item.isRead && styles.newsTitleRead]} numberOfLines={2}>
+        <Text
+          style={[styles.newsTitle, item.isRead && styles.newsTitleRead]}
+          numberOfLines={2}
+        >
           {item.title}
         </Text>
 
@@ -244,7 +284,7 @@ export default function HomeScreen() {
   // Local state: which news items have been marked read (optimistic UI)
   // Replace with a real state manager (Zustand, Redux, React Query) later.
   const [readIds, setReadIds] = useState<Set<string>>(
-    new Set(MOCK_NEWS.filter((n) => n.isRead).map((n) => n.id))
+    new Set(MOCK_NEWS.filter((n) => n.isRead).map((n) => n.id)),
   );
 
   function handleNewsPress(item: NewsItem) {
@@ -274,9 +314,7 @@ export default function HomeScreen() {
         <View style={styles.headerBanner}>
           {/* Left: greeting text */}
           <View style={styles.headerLeft}>
-            <Text style={styles.greetingText}>
-              {getGreeting()},
-            </Text>
+            <Text style={styles.greetingText}>{getGreeting()},</Text>
             <Text style={styles.memberName}>{MOCK_MEMBER.firstName} 👋</Text>
             {/* Chapter & role subtitle */}
             {/* <Text style={styles.chapterSubtitle}>
@@ -290,7 +328,9 @@ export default function HomeScreen() {
             onPress={() => router.push("/profile")}
             activeOpacity={0.8}
           >
-            <Text style={styles.avatarInitials}>{MOCK_MEMBER.avatarInitials}</Text>
+            <Text style={styles.avatarInitials}>
+              {MOCK_MEMBER.avatarInitials}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -485,7 +525,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.gold + "22",  // 13% opacity gold
+    backgroundColor: COLORS.gold + "22", // 13% opacity gold
     alignItems: "center",
     justifyContent: "center",
     marginBottom: SPACING.sm,
@@ -507,7 +547,7 @@ const styles = StyleSheet.create({
 
   // ── Events Horizontal Scroll ───────────────────────────────────────────────
   eventsScroll: {
-    paddingRight: SPACING.lg,   // Trailing padding inside the scroll
+    paddingRight: SPACING.lg, // Trailing padding inside the scroll
     gap: SPACING.md,
   },
   eventCard: {
@@ -601,7 +641,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.card,
   },
   newsCardPinned: {
-    borderColor: COLORS.gold + "55",  // Subtle gold border for pinned items
+    borderColor: COLORS.gold + "55", // Subtle gold border for pinned items
   },
   pinnedStrip: {
     width: 3,

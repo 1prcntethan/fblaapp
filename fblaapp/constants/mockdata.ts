@@ -150,7 +150,7 @@ export const MOCK_NEWS: NewsItem[] = [
   },
   {
     id:          "news_003",
-    title:       "Lincoln HS Chapter Wins Regional Award",
+    title:       "Mountain View HS Chapter Wins Regional Award",
     summary:
       "Congratulations to our chapter for earning the Gold Seal Chapter of Merit award at the Regional Leadership Conference!",
     category:    "award",
@@ -201,7 +201,7 @@ export const EVENT_TYPE_META: Record<
 // Used by the Events/Calendar screen which needs richer detail fields.
 export interface CalendarEvent extends UpcomingEvent {
   description:  string;        // Full description shown in detail view
-  organizer:    string;        // e.g. "FBLA National", "Lincoln HS Chapter"
+  organizer:    string;        // e.g. "FBLA National", "Mountain View HS Chapter"
   registrationUrl?: string;    // Link to register (if applicable)
   isRegistered: boolean;       // Has this member registered?
   allDay:       boolean;       // True for deadlines that span the whole day
@@ -322,17 +322,17 @@ export const MOCK_RESOURCE_CATEGORIES: ResourceCategory[] = [
         title:       "FBLA Member Handbook 2025–2026",
         description: "Everything a new and returning member needs: mission, bylaws, officer responsibilities, code of conduct, and dress code.",
         kind:        "pdf",
-        url:         "https://www.fbla-pbl.org/",
+        url:         "https://www.fbla.org/high-school/competitive-events/",
         isFeatured:  true,
         updatedAt:   "2025-08-15",
         fileSize:    "6.8 MB",
       },
       {
         id:          "res_006",
-        title:       "FBLA National Bylaws",
+        title:       "FBLA National Code of Conduct",
         description: "The official governing document of FBLA-PBL, Inc. Required reading for chapter officers.",
         kind:        "pdf",
-        url:         "https://www.fbla-pbl.org/about/bylaws-and-policies/",
+        url:         "https://www.fbla.org/codeofconduct/",
         isFeatured:  false,
         updatedAt:   "2024-07-01",
         fileSize:    "1.5 MB",
@@ -489,23 +489,23 @@ export const MOCK_ALL_EVENTS: CalendarEvent[] = [
   // ── March (carry-over) ──────────────────────────────────────────────────
   {
     id:              "evt_002",
-    title:           "Chapter Officer Meeting",
-    date:            "2026-03-28",
+    title:           "SBLC Meeting",
+    date:            "2026-05-18",
     time:            "3:30 PM",
-    location:        "Room 204, Lincoln HS",
+    location:        "Mountain View Skybox",
     type:            "meeting",
     isReminder:      false,
     allDay:          false,
     description:
       "Monthly officer meeting to review chapter progress, upcoming events, and assign responsibilities for the State Leadership Conference.",
-    organizer:       "Lincoln HS Chapter",
+    organizer:       "Mountain View HS Chapter",
     isRegistered:    true,
   },
   // ── April ───────────────────────────────────────────────────────────────
   {
     id:              "evt_003",
     title:           "NLC Registration Deadline",
-    date:            "2026-04-01",
+    date:            "2026-05-01",
     time:            "11:59 PM",
     location:        "Online",
     type:            "deadline",
@@ -519,93 +519,93 @@ export const MOCK_ALL_EVENTS: CalendarEvent[] = [
   },
   {
     id:              "evt_001",
-    title:           "State Leadership Conference",
-    date:            "2026-04-05",
+    title:           "State Business Leadership Conference",
+    date:            "2026-04-23",
     time:            "8:00 AM",
-    location:        "Sacramento Convention Center",
+    location:        "Davenport Grand Hotel, Spokane",
     type:            "conference",
     isReminder:      true,
     allDay:          false,
     description:
-      "California's annual State Leadership Conference. Compete in your events, attend workshops, elect state officers, and network with members from across the state.",
-    organizer:       "FBLA California",
+      "Washington's annual State Leadership Conference. Compete in your events, attend workshops, elect state officers, and network with members from across the state.",
+    organizer:       "FBLA Washington",
     registrationUrl: "https://www.fbla-pbl.org/",
     isRegistered:    true,
   },
   {
     id:              "evt_004",
-    title:           "Business Plan Competition",
-    date:            "2026-04-05",
+    title:           "Mobile App Development Competition",
+    date:            "2026-05-05",
     time:            "10:00 AM",
     location:        "Room 12A, Convention Center",
     type:            "competition",
     isReminder:      true,
     allDay:          false,
     description:
-      "Present your business plan to a panel of industry judges. Teams of 1–3 members. Bring printed copies of your plan and any visual aids.",
-    organizer:       "FBLA California",
+      "Present your mobile app to a panel of industry judges. Teams of 1–3 members. Bring printed copies of your app and any visual aids.",
+    organizer:       "FBLA Washington",
     isRegistered:    true,
   },
   {
     id:              "evt_005",
     title:           "Leadership Workshop: Public Speaking",
-    date:            "2026-04-08",
+    date:            "2026-05-08",
     time:            "4:00 PM",
-    location:        "Room 204, Lincoln HS",
+    location:        "Room 204, Mountain View HS",
     type:            "workshop",
     isReminder:      false,
     allDay:          false,
     description:
       "Prepare for the Public Speaking competitive event. Practice rounds, feedback from advisers, and tips from last year's state finalists.",
-    organizer:       "Lincoln HS Chapter",
+    organizer:       "Mountain View HS Chapter",
     isRegistered:    false,
   },
   {
     id:              "evt_006",
     title:           "Fundraiser: Spring Bake Sale",
-    date:            "2026-04-10",
+    date:            "2026-05-10",
     time:            "7:30 AM",
-    location:        "Lincoln HS Main Hallway",
+    location:        "Mountain View HS Main Hallway",
     type:            "meeting",
     isReminder:      false,
     allDay:          false,
     description:
       "Annual spring bake sale fundraiser to support NLC travel costs. All members are encouraged to bring baked goods and help during passing periods.",
-    organizer:       "Lincoln HS Chapter",
+    organizer:       "Mountain View HS Chapter",
     isRegistered:    false,
   },
   {
     id:              "evt_007",
     title:           "Coding & Programming Event",
-    date:            "2026-04-14",
+    date:            "2026-05-14",
     time:            "1:00 PM",
-    location:        "Computer Lab B, Lincoln HS",
+    location:        "Computer Lab B, Mountain View HS",
     type:            "competition",
     isReminder:      true,
     allDay:          false,
     description:
       "Chapter-level practice round for the Coding & Programming competitive event. Timed challenges simulating the NLC format.",
-    organizer:       "Lincoln HS Chapter",
+    organizer:       "Mountain View HS Chapter",
     isRegistered:    true,
   },
   {
     id:              "evt_008",
     title:           "NLC Preparation Meeting",
-    date:            "2026-04-17",
+    date:            "2026-05-17",
     time:            "3:30 PM",
-    location:        "Room 204, Lincoln HS",
+    location:        "Room 204, Mountain View HS",
     type:            "meeting",
     isReminder:      false,
     allDay:          false,
     description:
       "Pre-NLC briefing covering travel logistics, hotel check-in, dress code expectations, event schedules, and chapter rules of conduct.",
-    organizer:       "Lincoln HS Chapter",
+    organizer:       "Mountain View HS Chapter",
     isRegistered:    false,
   },
   {
     id:              "evt_009",
     title:           "Scholarship Submission Deadline",
-    date:            "2026-04-20",
+    date:            "2026-05-20",
     time:            "11:59 PM",
     location:        "Online",
     type:            "deadline",
@@ -620,15 +620,15 @@ export const MOCK_ALL_EVENTS: CalendarEvent[] = [
   {
     id:              "evt_010",
     title:           "Social Media & Marketing Workshop",
-    date:            "2026-04-22",
+    date:            "2026-05-22",
     time:            "4:00 PM",
-    location:        "Room 204, Lincoln HS",
+    location:        "Room 204, Mountain View HS",
     type:            "workshop",
     isReminder:      false,
     allDay:          false,
     description:
       "Learn best practices for chapter social media, recruiting new members, and running community service campaigns. Guest speaker from a local marketing agency.",
-    organizer:       "Lincoln HS Chapter",
+    organizer:       "Mountain View HS Chapter",
     isRegistered:    false,
   },
   {
@@ -709,7 +709,7 @@ export const SOCIAL_PLATFORM_META: Record<
 export interface SocialAccount {
   id:        string;
   platform:  SocialPlatform;
-  handle:    string;         // e.g. "@LincolnFBLA"
+  handle:    string;         // e.g. "@Mountain ViewFBLA"
   url:       string;         // Full profile URL
   followers: string;         // Display string: "1.2K", "840", etc.
 }
@@ -748,28 +748,28 @@ export const MOCK_SOCIAL_ACCOUNTS: SocialAccount[] = [
   {
     id:        "acc_ig",
     platform:  "instagram",
-    handle:    "@LincolnFBLA",
+    handle:    "@Mountain ViewFBLA",
     url:       "https://instagram.com/",
     followers: "1.2K",
   },
   {
     id:        "acc_tw",
     platform:  "twitter",
-    handle:    "@LincolnFBLA",
+    handle:    "@Mountain ViewFBLA",
     url:       "https://twitter.com/",
     followers: "840",
   },
   {
     id:        "acc_fb",
     platform:  "facebook",
-    handle:    "Lincoln HS FBLA",
+    handle:    "Mountain View HS FBLA",
     url:       "https://facebook.com/",
     followers: "2.1K",
   },
   {
     id:        "acc_yt",
     platform:  "youtube",
-    handle:    "Lincoln HS FBLA",
+    handle:    "Mountain View HS FBLA",
     url:       "https://youtube.com/",
     followers: "310",
   },
@@ -784,10 +784,10 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_001",
     platform:   "instagram",
     accountId:  "acc_ig",
-    handle:     "@LincolnFBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "@Mountain ViewFBLA",
+    authorName: "Mountain View HS FBLA",
     content:
-      "🏆 We're heading to NLC 2026 in Atlanta! 8 members qualified across 6 competitive events. So proud of this team. See you in Atlanta! 🇺🇸 #FBLA #NLC2026 #LincolnFBLA",
+      "🏆 We're heading to NLC 2026 in Atlanta! 8 members qualified across 6 competitive events. So proud of this team. See you in Atlanta! 🇺🇸 #FBLA #NLC2026 #Mountain ViewFBLA",
     publishedAt: "2026-03-22T16:00:00Z",
     hasImage:    true,
     imageLabel:  "Photo • NLC Qualifier Announcement",
@@ -800,8 +800,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_002",
     platform:   "twitter",
     accountId:  "acc_tw",
-    handle:     "@LincolnFBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "@Mountain ViewFBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "Reminder ⏰ — NLC registration closes April 1st at 11:59 PM. If you qualified, make sure your adviser completes registration ASAP. Link in bio! #FBLA #NLC2026",
     publishedAt: "2026-03-25T09:30:00Z",
@@ -816,8 +816,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_003",
     platform:   "instagram",
     accountId:  "acc_ig",
-    handle:     "@LincolnFBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "@Mountain ViewFBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "Gold Seal Chapter of Merit — ACHIEVED! 🥇 Our chapter earned the highest chapter recognition at the Regional Leadership Conference. Thank you to every member who put in the work this year. 💙💛 #FBLA #GoldSeal",
     publishedAt: "2026-03-16T18:00:00Z",
@@ -832,8 +832,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_004",
     platform:   "facebook",
     accountId:  "acc_fb",
-    handle:     "Lincoln HS FBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "Mountain View HS FBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "📣 Applications for FBLA-PBL scholarships are now open! Graduating seniors can apply for awards ranging from $1,000 to $5,000. Deadline is May 15, 2026. Visit the Resources tab in the FBLA Member App or go to fbla-pbl.org to apply.",
     publishedAt: "2026-03-11T10:00:00Z",
@@ -846,8 +846,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_005",
     platform:   "youtube",
     accountId:  "acc_yt",
-    handle:     "Lincoln HS FBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "Mountain View HS FBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "🎥 NEW VIDEO: Full recap of our Regional Leadership Conference experience — competitions, workshops, networking, and the award ceremony. Watch now!",
     publishedAt: "2026-03-18T14:00:00Z",
@@ -862,8 +862,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_006",
     platform:   "twitter",
     accountId:  "acc_tw",
-    handle:     "@LincolnFBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "@Mountain ViewFBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "Big congratulations to our Business Plan team — Jordan, Marcus & Priya — for placing 1st at regionals! 🎉 Next stop: State Leadership Conference. #FBLA #BusinessPlan",
     publishedAt: "2026-03-15T20:00:00Z",
@@ -876,8 +876,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_007",
     platform:   "instagram",
     accountId:  "acc_ig",
-    handle:     "@LincolnFBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "@Mountain ViewFBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "Spring Bake Sale is THIS Friday, April 10! 🍪🧁 All proceeds go toward NLC travel costs. Come hungry and support your chapter! Room 204 at lunch.",
     publishedAt: "2026-04-07T08:00:00Z",
@@ -892,8 +892,8 @@ export const MOCK_SOCIAL_POSTS: SocialPost[] = [
     id:         "post_008",
     platform:   "facebook",
     accountId:  "acc_fb",
-    handle:     "Lincoln HS FBLA",
-    authorName: "Lincoln HS FBLA",
+    handle:     "Mountain View HS FBLA",
+    authorName: "Mountain View HS FBLA",
     content:
       "📋 Meeting recap from March 28: We reviewed State Leadership Conference logistics, confirmed event assignments, and voted on the chapter community service project for spring. Minutes are posted to the chapter Google Drive.",
     publishedAt: "2026-03-28T17:30:00Z",
@@ -1105,11 +1105,11 @@ export const MOCK_BADGES: AchievementBadge[] = [
  * In production: GET /chapter/:id
  */
 export const MOCK_CHAPTER_INFO = {
-  name:           "Lincoln High School FBLA",
+  name:           "Mountain View High School FBLA",
   id:             "CA-0412",
   adviser:        "Ms. Patricia Chen",
-  adviserEmail:   "p.chen@lincolnhs.edu",
-  school:         "Lincoln High School",
+  adviserEmail:   "p.chen@Mountain Viewhs.edu",
+  school:         "Mountain View High School",
   city:           "Sacramento",
   state:          "California",
   region:         "Region 4",

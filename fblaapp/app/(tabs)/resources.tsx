@@ -56,13 +56,13 @@ import {
   SPACING,
   RADIUS,
   SHADOWS,
-} from "../constants/theme";
+} from "../../constants/theme";
 import {
   MOCK_RESOURCE_CATEGORIES,
   RESOURCE_KIND_META,
   type Resource,
   type ResourceCategory,
-} from "../constants/mockdata";
+} from "../../constants/mockdata";
 
 // Android requires this flag to enable LayoutAnimation
 if (Platform.OS === "android") {
@@ -178,9 +178,9 @@ function FeaturedCard({ resource, onPress }: FeaturedCardProps) {
       <View style={styles.featuredFooter}>
         <KindBadge kind={resource.kind} />
         {/* File size if applicable */}
-        {resource.fileSize && (
+        {/* {resource.fileSize && (
           <Text style={styles.featuredFileSize}>{resource.fileSize}</Text>
-        )}
+        )} */}
       </View>
     </TouchableOpacity>
   );
@@ -218,12 +218,12 @@ function ResourceRow({ resource, onPress, isLast, searchQuery }: ResourceRowProp
         {/* Bottom row: kind badge + file size + updated date */}
         <View style={styles.resourceMeta}>
           <KindBadge kind={resource.kind} />
-          {resource.fileSize && (
+          {/* {resource.fileSize && (
             <>
               <View style={styles.metaDot} />
               <Text style={styles.resourceMetaText}>{resource.fileSize}</Text>
             </>
-          )}
+          )} */}
           <View style={styles.metaDot} />
           <Text style={styles.resourceMetaText}>{formatUpdatedDate(resource.updatedAt)}</Text>
         </View>

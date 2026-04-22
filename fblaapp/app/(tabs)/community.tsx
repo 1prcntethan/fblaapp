@@ -39,35 +39,39 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import React, { useState, useMemo, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  StatusBar,
+  Alert,
   Linking,
+  Modal,
+  Pressable,
+  ScrollView,
+  Share,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import {
-  COLORS,
-  FONTS,
-  FONT_SIZE,
-  SPACING,
-  RADIUS,
-  SHADOWS,
-} from "../constants/theme";
-import {
   MOCK_SOCIAL_ACCOUNTS,
   MOCK_SOCIAL_POSTS,
   SOCIAL_PLATFORM_META,
+  type SocialAccount,
   type SocialPlatform,
   type SocialPost,
-  type SocialAccount,
-} from "../constants/mockdata";
+} from "../../constants/mockdata";
+import {
+  COLORS,
+  FONTS,
+  FONT_SIZE,
+  RADIUS,
+  SHADOWS,
+  SPACING,
+} from "../../constants/theme";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -75,31 +79,32 @@ import {
 
 // Filter tab options — "all" + one per platform that has posts
 // To add a platform: add to SOCIAL_PLATFORM_META and this array
-const PLATFORM_FILTERS: Array<{ key: "all" | SocialPlatform; label: string }> = [
-  { key: "all",       label: "All" },
-  { key: "instagram", label: "Instagram" },
-  { key: "twitter",   label: "X" },
-  { key: "facebook",  label: "Facebook" },
-  { key: "youtube",   label: "YouTube" },
-];
+const PLATFORM_FILTERS: Array<{ key: "all" | SocialPlatform; label: string }> =
+  [
+    { key: "all", label: "All" },
+    { key: "instagram", label: "Instagram" },
+    { key: "twitter", label: "X" },
+    { key: "facebook", label: "Facebook" },
+    { key: "youtube", label: "YouTube" },
+  ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Utility: human-readable relative time  e.g. "2h ago", "Mar 15"
 // ─────────────────────────────────────────────────────────────────────────────
 function relativeTime(isoDatetime: string): string {
-  const diff  = Date.now() - new Date(isoDatetime).getTime();
-  const mins  = Math.floor(diff / 60_000);
+  const diff = Date.now() - new Date(isoDatetime).getTime();
+  const mins = Math.floor(diff / 60_000);
   const hours = Math.floor(diff / 3_600_000);
-  const days  = Math.floor(diff / 86_400_000);
+  const days = Math.floor(diff / 86_400_000);
 
-  if (mins  < 60)  return `${mins}m ago`;
-  if (hours < 24)  return `${hours}h ago`;
-  if (days  < 7)   return `${days}d ago`;
+  if (mins < 60) return `${mins}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
 
   // Older than a week → show the date
   return new Date(isoDatetime).toLocaleDateString("en-US", {
     month: "short",
-    day:   "numeric",
+    day: "numeric",
   });
 }
 
@@ -107,8 +112,9 @@ function relativeTime(isoDatetime: string): string {
 // Utility: compact number  e.g. 4821 → "4.8K"
 // ─────────────────────────────────────────────────────────────────────────────
 function compactNumber(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
-  if (n >= 1_000)     return (n / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+  if (n >= 1_000_000)
+    return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
   return String(n);
 }
 
@@ -126,9 +132,9 @@ function getInitials(name: string): string {
 // Horizontal scroll row of tab pills — one per platform + "All"
 // ─────────────────────────────────────────────────────────────────────────────
 interface PlatformTabsProps {
-  active:   "all" | SocialPlatform;
+  active: "all" | SocialPlatform;
   onChange: (key: "all" | SocialPlatform) => void;
-  counts:   Record<string, number>;   // key → post count (for badges)
+  counts: Record<string, number>; // key → post count (for badges)
 }
 
 function PlatformTabs({ active, onChange, counts }: PlatformTabsProps) {
@@ -139,20 +145,26 @@ function PlatformTabs({ active, onChange, counts }: PlatformTabsProps) {
       contentContainerStyle={styles.tabsRow}
     >
       {PLATFORM_FILTERS.map(({ key, label }) => {
-        const isActive    = key === active;
+        const isActive = key === active;
         const platformColor =
           key === "all"
             ? COLORS.gold
             : SOCIAL_PLATFORM_META[key as SocialPlatform].color;
         const count = counts[key] ?? 0;
-        const icon  = key === "all" ? null : SOCIAL_PLATFORM_META[key as SocialPlatform].icon;
+        const icon =
+          key === "all"
+            ? null
+            : SOCIAL_PLATFORM_META[key as SocialPlatform].icon;
 
         return (
           <TouchableOpacity
             key={key}
             style={[
               styles.tab,
-              isActive && { backgroundColor: platformColor + "22", borderColor: platformColor },
+              isActive && {
+                backgroundColor: platformColor + "22",
+                borderColor: platformColor,
+              },
             ]}
             onPress={() => onChange(key)}
             activeOpacity={0.75}
@@ -178,7 +190,11 @@ function PlatformTabs({ active, onChange, counts }: PlatformTabsProps) {
               <View
                 style={[
                   styles.tabBadge,
-                  { backgroundColor: isActive ? platformColor : COLORS.cardBorder },
+                  {
+                    backgroundColor: isActive
+                      ? platformColor
+                      : COLORS.cardBorder,
+                  },
                 ]}
               >
                 <Text
@@ -210,7 +226,7 @@ function AccountCard({ account }: AccountCardProps) {
 
   function handleFollow() {
     Linking.openURL(account.url).catch(() =>
-      console.warn("[Community] Cannot open:", account.url)
+      console.warn("[Community] Cannot open:", account.url),
     );
   }
 
@@ -221,7 +237,12 @@ function AccountCard({ account }: AccountCardProps) {
       activeOpacity={0.85}
     >
       {/* Platform icon circle */}
-      <View style={[styles.accountIconCircle, { backgroundColor: meta.color + "22" }]}>
+      <View
+        style={[
+          styles.accountIconCircle,
+          { backgroundColor: meta.color + "22" },
+        ]}
+      >
         <Ionicons name={meta.icon as any} size={20} color={meta.color} />
       </View>
 
@@ -233,7 +254,9 @@ function AccountCard({ account }: AccountCardProps) {
 
       {/* Follow CTA */}
       <View style={[styles.followBtn, { borderColor: meta.color }]}>
-        <Text style={[styles.followBtnText, { color: meta.color }]}>Follow</Text>
+        <Text style={[styles.followBtnText, { color: meta.color }]}>
+          Follow
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -252,15 +275,18 @@ interface ImagePlaceholderProps {
 
 function ImagePlaceholder({ label, color, isVideo }: ImagePlaceholderProps) {
   return (
-    <View style={[styles.imagePlaceholder, { backgroundColor: color ?? COLORS.navyMid }]}>
+    <View
+      style={[
+        styles.imagePlaceholder,
+        { backgroundColor: color ?? COLORS.navyMid },
+      ]}
+    >
       <Ionicons
         name={isVideo ? "play-circle-outline" : "image-outline"}
         size={32}
         color={COLORS.textMuted}
       />
-      {label && (
-        <Text style={styles.imagePlaceholderLabel}>{label}</Text>
-      )}
+      {label && <Text style={styles.imagePlaceholderLabel}>{label}</Text>}
       {/* TODO: Replace with actual <Image> component:
            <Image
              source={{ uri: post.imageUrl }}
@@ -277,15 +303,21 @@ function ImagePlaceholder({ label, color, isVideo }: ImagePlaceholderProps) {
 // The main social post card — mirrors the look of a native social post.
 // ─────────────────────────────────────────────────────────────────────────────
 interface PostCardProps {
-  post:        SocialPost;
-  isExpanded:  boolean;
+  post: SocialPost;
+  isExpanded: boolean;
   onToggleExpand: () => void;
+  onShare: () => void;
 }
 
-function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
-  const meta       = SOCIAL_PLATFORM_META[post.platform];
-  const isVideo    = post.platform === "youtube";
-  const initials   = getInitials(post.authorName);
+function PostCard({
+  post,
+  isExpanded,
+  onToggleExpand,
+  onShare,
+}: PostCardProps) {
+  const meta = SOCIAL_PLATFORM_META[post.platform];
+  const isVideo = post.platform === "youtube";
+  const initials = getInitials(post.authorName);
 
   // ── Engagement interaction stubs ──────────────────────────────────────────
   // Fill these in with your real like/share logic (API calls, optimistic updates).
@@ -293,13 +325,20 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
     // TODO: POST /api/social/like { postId: post.id }
     console.log("[Community] Like post:", post.id);
   }
-  function handleShare() {
-    // TODO: Use expo-sharing or Share.share() from react-native
-    console.log("[Community] Share post:", post.id);
+
+  // Copy post link to clipboard
+  function handleCopyLink() {
+    // Using Alert to simulate clipboard copy feedback
+    // In production, use Clipboard from @react-native-clipboard/clipboard
+    Alert.alert("Link Copied", "Post link copied to clipboard!", [
+      { text: "OK" },
+    ]);
+    console.log("[Community] Copy link:", post.url);
   }
+
   function handleViewOnPlatform() {
     Linking.openURL(post.url).catch(() =>
-      console.warn("[Community] Cannot open:", post.url)
+      console.warn("[Community] Cannot open:", post.url),
     );
   }
 
@@ -309,20 +348,22 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
 
   return (
     <View style={[styles.postCard, post.isPinned && styles.postCardPinned]}>
-
       {/* ── Pinned indicator ─────────────────────────────────────────────── */}
-      
 
       {/* ── Platform color bar (left edge) ───────────────────────────────── */}
       <View style={[styles.platformBar, { backgroundColor: meta.color }]} />
 
       {/* ── Card body ────────────────────────────────────────────────────── */}
       <View style={styles.postBody}>
-
         {/* Author row: avatar + name/handle + timestamp + platform badge */}
         <View style={styles.authorRow}>
           {/* Avatar circle with initials */}
-          <View style={[styles.avatarCircle, { backgroundColor: meta.color + "33" }]}>
+          <View
+            style={[
+              styles.avatarCircle,
+              { backgroundColor: meta.color + "33" },
+            ]}
+          >
             <Text style={[styles.avatarInitials, { color: meta.color }]}>
               {initials}
             </Text>
@@ -336,12 +377,19 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
             <View style={styles.authorSubRow}>
               <Text style={styles.authorHandle}>{post.handle}</Text>
               <View style={styles.authorDot} />
-              <Text style={styles.postTime}>{relativeTime(post.publishedAt)}</Text>
+              <Text style={styles.postTime}>
+                {relativeTime(post.publishedAt)}
+              </Text>
             </View>
           </View>
 
           {/* Platform icon badge (top-right) */}
-          <View style={[styles.platformBadge, { backgroundColor: meta.color + "22" }]}>
+          <View
+            style={[
+              styles.platformBadge,
+              { backgroundColor: meta.color + "22" },
+            ]}
+          >
             <Ionicons name={meta.icon as any} size={16} color={meta.color} />
           </View>
         </View>
@@ -356,7 +404,10 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
 
         {/* "Show more / Show less" toggle — only rendered if content is long */}
         {post.content.length > 140 && (
-          <TouchableOpacity onPress={onToggleExpand} hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}>
+          <TouchableOpacity
+            onPress={onToggleExpand}
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+          >
             <Text style={styles.showMoreText}>
               {isExpanded ? "Show less" : "Show more"}
             </Text>
@@ -381,14 +432,22 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
               onPress={handleLike}
               activeOpacity={0.7}
             >
-              <Ionicons name="heart-outline" size={16} color={COLORS.textSecondary} />
+              <Ionicons
+                name="heart-outline"
+                size={16}
+                color={COLORS.textSecondary}
+              />
               <Text style={styles.engagementCount}>
                 {compactNumber(post.engagement.likes)}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.engagementBtn} activeOpacity={0.7}>
-              <Ionicons name="chatbubble-outline" size={16} color={COLORS.textSecondary} />
+              <Ionicons
+                name="chatbubble-outline"
+                size={16}
+                color={COLORS.textSecondary}
+              />
               <Text style={styles.engagementCount}>
                 {compactNumber(post.engagement.comments)}
               </Text>
@@ -396,10 +455,14 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
 
             <TouchableOpacity
               style={styles.engagementBtn}
-              onPress={handleShare}
+              onPress={onShare}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-redo-outline" size={16} color={COLORS.textSecondary} />
+              <Ionicons
+                name="arrow-redo-outline"
+                size={16}
+                color={COLORS.textSecondary}
+              />
               <Text style={styles.engagementCount}>
                 {compactNumber(post.engagement.shares)}
               </Text>
@@ -418,7 +481,6 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
             </Text>
           </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );
@@ -428,14 +490,21 @@ function PostCard({ post, isExpanded, onToggleExpand }: PostCardProps) {
 // Main Screen Component
 // ─────────────────────────────────────────────────────────────────────────────
 export default function CommunityScreen() {
-
   // ── State ──────────────────────────────────────────────────────────────────
   // Active platform filter tab
-  const [activePlatform, setActivePlatform] = useState<"all" | SocialPlatform>("all");
+  const [activePlatform, setActivePlatform] = useState<"all" | SocialPlatform>(
+    "all",
+  );
 
   // Track which post cards are expanded (show full text)
   // Key: post.id, Value: true = expanded
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
+
+  // Share modal state
+  const [shareModalPost, setShareModalPost] = useState<SocialPost | null>(null);
+
+  // Copy confirmation toast state
+  const [showCopiedToast, setShowCopiedToast] = useState(false);
 
   // ── Toggle post expansion ───────────────────────────────────────────────────
   const toggleExpand = useCallback((postId: string) => {
@@ -453,14 +522,16 @@ export default function CommunityScreen() {
   // ── Filtered + sorted posts ─────────────────────────────────────────────────
   // Sort order: pinned first, then by publishedAt descending (newest first)
   const filteredPosts = useMemo<SocialPost[]>(() => {
-    return MOCK_SOCIAL_POSTS
-      .filter((p) => activePlatform === "all" || p.platform === activePlatform)
-      .sort((a, b) => {
-        // Pinned posts always float to top
-        if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
-        // Then newest first
-        return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-      });
+    return MOCK_SOCIAL_POSTS.filter(
+      (p) => activePlatform === "all" || p.platform === activePlatform,
+    ).sort((a, b) => {
+      // Pinned posts always float to top
+      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+      // Then newest first
+      return (
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      );
+    });
   }, [activePlatform]);
 
   // ── Post counts per platform (for tab badges) ───────────────────────────────
@@ -475,8 +546,9 @@ export default function CommunityScreen() {
   // ── Total engagement across filtered posts (shown in section header) ─────────
   const totalEngagement = useMemo(() => {
     return filteredPosts.reduce(
-      (sum, p) => sum + p.engagement.likes + p.engagement.comments + p.engagement.shares,
-      0
+      (sum, p) =>
+        sum + p.engagement.likes + p.engagement.comments + p.engagement.shares,
+      0,
     );
   }, [filteredPosts]);
 
@@ -490,7 +562,6 @@ export default function CommunityScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-
         {/* ── Intro header ─────────────────────────────────────────────────── */}
         <View style={styles.introRow}>
           <View style={styles.introLeft}>
@@ -510,7 +581,11 @@ export default function CommunityScreen() {
         {/* ── "Follow Us" Accounts Strip ─────────────────────────────────── */}
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeaderRow}>
-            <Ionicons name="share-social-outline" size={15} color={COLORS.gold} />
+            <Ionicons
+              name="share-social-outline"
+              size={15}
+              color={COLORS.gold}
+            />
             <Text style={styles.sectionHeading}>Follow the Chapter</Text>
           </View>
 
@@ -549,7 +624,11 @@ export default function CommunityScreen() {
         <View style={styles.feedWrapper}>
           {filteredPosts.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="chatbubbles-outline" size={40} color={COLORS.textMuted} />
+              <Ionicons
+                name="chatbubbles-outline"
+                size={40}
+                color={COLORS.textMuted}
+              />
               <Text style={styles.emptyStateText}>No posts yet</Text>
               <Text style={styles.emptyStateSub}>
                 No posts from this platform. Check back soon!
@@ -562,6 +641,7 @@ export default function CommunityScreen() {
                 post={post}
                 isExpanded={expandedPosts.has(post.id)}
                 onToggleExpand={() => toggleExpand(post.id)}
+                onShare={() => setShareModalPost(post)}
               />
             ))
           )}
@@ -569,15 +649,138 @@ export default function CommunityScreen() {
 
         {/* ── Footer disclaimer ────────────────────────────────────────────── */}
         <View style={styles.footer}>
-          <Ionicons name="information-circle-outline" size={13} color={COLORS.textMuted} />
+          <Ionicons
+            name="information-circle-outline"
+            size={13}
+            color={COLORS.textMuted}
+          />
           <Text style={styles.footerText}>
-            Posts are aggregated from chapter social media accounts.
-            Content reflects individual account posts and is not moderated by this app.
+            Posts are aggregated from chapter social media accounts. Content
+            reflects individual account posts and is not moderated by this app.
           </Text>
         </View>
 
         <View style={{ height: SPACING["2xl"] }} />
       </ScrollView>
+
+      {/* ── Share Modal ─────────────────────────────────────────────────────── */}
+      <Modal
+        visible={shareModalPost !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShareModalPost(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShareModalPost(null)}
+        >
+          <Pressable
+            style={styles.modalContent}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text style={styles.modalTitle}>Share Post</Text>
+
+            {shareModalPost && (
+              <>
+                <Text style={styles.modalPostPreview} numberOfLines={2}>
+                  {shareModalPost.content}
+                </Text>
+
+                <View style={styles.shareOptions}>
+                  {/* Share via native share sheet (social apps) */}
+                  <TouchableOpacity
+                    style={styles.shareOption}
+                    onPress={async () => {
+                      try {
+                        await Share.share({
+                          message: `${shareModalPost.content.substring(0, 100)}${shareModalPost.content.length > 100 ? "..." : ""}\n\nCheck out this post on ${SOCIAL_PLATFORM_META[shareModalPost.platform].label}!`,
+                          url: shareModalPost.url,
+                          title: shareModalPost.authorName,
+                        });
+                      } catch (error) {
+                        console.warn("[Community] Share error:", error);
+                      }
+                      setShareModalPost(null);
+                    }}
+                  >
+                    <View
+                      style={[
+                        styles.shareIconCircle,
+                        { backgroundColor: COLORS.gold + "22" },
+                      ]}
+                    >
+                      <Ionicons
+                        name="share-social"
+                        size={20}
+                        color={COLORS.gold}
+                      />
+                    </View>
+                    <Text style={styles.shareOptionLabel}>Share via...</Text>
+                  </TouchableOpacity>
+
+                  {/* Copy link */}
+                  <TouchableOpacity
+                    style={styles.shareOption}
+                    onPress={() => {
+                      // Generate platform-specific URL based on post platform
+                      const platformUrls: Record<string, string> = {
+                        instagram: "https://instagram.com/",
+                        twitter: "https://twitter.com/",
+                        facebook: "https://facebook.com/",
+                        youtube: "https://youtube.com/",
+                      };
+                      const platformUrl =
+                        platformUrls[shareModalPost.platform] ||
+                        shareModalPost.url;
+
+                      console.log("[Community] Copy link:", platformUrl);
+                      setShareModalPost(null);
+                      setShowCopiedToast(true);
+                      // Hide toast after 2 seconds
+                      setTimeout(() => setShowCopiedToast(false), 2000);
+                    }}
+                  >
+                    <View
+                      style={[
+                        styles.shareIconCircle,
+                        { backgroundColor: COLORS.gold + "22" },
+                      ]}
+                    >
+                      <Ionicons name="copy" size={20} color={COLORS.gold} />
+                    </View>
+                    <Text style={styles.shareOptionLabel}>Copy Link</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+
+            <TouchableOpacity
+              style={styles.modalCancelBtn}
+              onPress={() => setShareModalPost(null)}
+            >
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* ── Copied Toast ─────────────────────────────────────────────────────── */}
+      <Modal
+        visible={showCopiedToast}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCopiedToast(false)}
+      >
+        <Pressable
+          style={styles.toastOverlay}
+          onPress={() => setShowCopiedToast(false)}
+        >
+          <View style={styles.toastContent}>
+            <Ionicons name="checkmark-circle" size={24} color={COLORS.gold} />
+            <Text style={styles.toastText}>Link copied to clipboard!</Text>
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -587,115 +790,115 @@ export default function CommunityScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   // ── Layout ────────────────────────────────────────────────────────────────
-  safeArea:      { flex: 1, backgroundColor: COLORS.background },
-  scroll:        { flex: 1 },
+  safeArea: { flex: 1, backgroundColor: COLORS.background },
+  scroll: { flex: 1 },
   scrollContent: { paddingBottom: SPACING.xl },
 
   // ── Intro header ──────────────────────────────────────────────────────────
   introRow: {
-    flexDirection:     "row",
-    alignItems:        "center",
-    justifyContent:    "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: SPACING.lg,
-    paddingTop:        SPACING.lg,
-    paddingBottom:     SPACING.sm,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.sm,
   },
   introLeft: { flex: 1, marginRight: SPACING.md },
   introTitle: {
-    fontSize:   FONT_SIZE["2xl"],
+    fontSize: FONT_SIZE["2xl"],
     fontFamily: FONTS.bold,
-    color:      COLORS.textPrimary,
+    color: COLORS.textPrimary,
     fontWeight: "700",
   },
   introSub: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.regular,
-    color:      COLORS.textSecondary,
-    marginTop:  2,
+    color: COLORS.textSecondary,
+    marginTop: 2,
     fontWeight: "400",
   },
   introAccent: {
-    width:           48,
-    height:          48,
-    borderRadius:    RADIUS.lg,
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.lg,
     backgroundColor: COLORS.gold + "18",
-    alignItems:      "center",
-    justifyContent:  "center",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // Gold divider
   goldBar: {
-    height:           2,
-    backgroundColor:  COLORS.gold,
+    height: 2,
+    backgroundColor: COLORS.gold,
     marginHorizontal: SPACING.lg,
-    marginTop:        SPACING.sm,
-    marginBottom:     SPACING.lg,
-    borderRadius:     RADIUS.full,
-    opacity:          0.5,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.lg,
+    borderRadius: RADIUS.full,
+    opacity: 0.5,
   },
 
   // ── Shared section utilities ───────────────────────────────────────────────
   sectionBlock: { marginBottom: SPACING.md },
   sectionHeaderRow: {
-    flexDirection:     "row",
-    alignItems:        "center",
-    gap:               SPACING.xs,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.xs,
     paddingHorizontal: SPACING.lg,
-    marginBottom:      SPACING.md,
+    marginBottom: SPACING.md,
   },
   sectionHeading: {
-    fontSize:   FONT_SIZE.lg,
+    fontSize: FONT_SIZE.lg,
     fontFamily: FONTS.bold,
-    color:      COLORS.textPrimary,
+    color: COLORS.textPrimary,
     fontWeight: "700",
   },
 
   // ── Account Cards (horizontal strip) ──────────────────────────────────────
   accountsScroll: {
     paddingHorizontal: SPACING.lg,
-    gap:               SPACING.md,
+    gap: SPACING.md,
   },
   accountCard: {
-    width:           130,
+    width: 130,
     backgroundColor: COLORS.cardBackground,
-    borderRadius:    RADIUS.lg,
-    borderWidth:     1,
-    borderColor:     COLORS.cardBorder,
-    padding:         SPACING.md,
-    alignItems:      "center",
-    gap:             SPACING.xs,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
+    padding: SPACING.md,
+    alignItems: "center",
+    gap: SPACING.xs,
     ...SHADOWS.card,
   },
   accountIconCircle: {
-    width:          44,
-    height:         44,
-    borderRadius:   RADIUS.full,
-    alignItems:     "center",
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
     justifyContent: "center",
-    marginBottom:   SPACING.xs,
+    marginBottom: SPACING.xs,
   },
   accountHandle: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.semibold,
-    color:      COLORS.textPrimary,
+    color: COLORS.textPrimary,
     fontWeight: "600",
-    textAlign:  "center",
+    textAlign: "center",
   },
   accountFollowers: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.regular,
-    color:      COLORS.textMuted,
+    color: COLORS.textMuted,
     fontWeight: "400",
   },
   followBtn: {
-    marginTop:        SPACING.sm,
+    marginTop: SPACING.sm,
     paddingHorizontal: SPACING.md,
-    paddingVertical:  SPACING.xs,
-    borderRadius:     RADIUS.full,
-    borderWidth:      1.5,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.full,
+    borderWidth: 1.5,
   },
   followBtnText: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.bold,
     fontWeight: "700",
   },
@@ -703,36 +906,36 @@ const styles = StyleSheet.create({
   // ── Platform Filter Tabs ───────────────────────────────────────────────────
   tabsRow: {
     paddingHorizontal: SPACING.lg,
-    paddingVertical:   SPACING.md,
-    gap:               SPACING.sm,
+    paddingVertical: SPACING.md,
+    gap: SPACING.sm,
   },
   tab: {
-    flexDirection:    "row",
-    alignItems:       "center",
-    gap:              SPACING.xs,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.xs,
     paddingHorizontal: SPACING.md,
-    paddingVertical:  SPACING.xs + 2,
-    borderRadius:     RADIUS.full,
-    backgroundColor:  COLORS.cardBackground,
-    borderWidth:      1,
-    borderColor:      COLORS.cardBorder,
+    paddingVertical: SPACING.xs + 2,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.cardBackground,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
   },
   tabLabel: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.medium,
-    color:      COLORS.textSecondary,
+    color: COLORS.textSecondary,
     fontWeight: "500",
   },
   tabBadge: {
-    minWidth:         18,
-    height:           18,
-    borderRadius:     RADIUS.full,
-    alignItems:       "center",
-    justifyContent:   "center",
+    minWidth: 18,
+    height: 18,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 4,
   },
   tabBadgeText: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.bold,
     fontWeight: "700",
   },
@@ -740,36 +943,36 @@ const styles = StyleSheet.create({
   // ── Feed header ────────────────────────────────────────────────────────────
   feedHeader: {
     paddingHorizontal: SPACING.lg,
-    marginBottom:      SPACING.md,
+    marginBottom: SPACING.md,
   },
   feedHeading: {
-    fontSize:   FONT_SIZE.lg,
+    fontSize: FONT_SIZE.lg,
     fontFamily: FONTS.bold,
-    color:      COLORS.textPrimary,
+    color: COLORS.textPrimary,
     fontWeight: "700",
   },
   feedSub: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.regular,
-    color:      COLORS.textMuted,
-    marginTop:  2,
+    color: COLORS.textMuted,
+    marginTop: 2,
     fontWeight: "400",
   },
 
   // ── Feed wrapper ───────────────────────────────────────────────────────────
   feedWrapper: {
     paddingHorizontal: SPACING.lg,
-    gap:               SPACING.md,
+    gap: SPACING.md,
   },
 
   // ── Post Card ─────────────────────────────────────────────────────────────
   postCard: {
     backgroundColor: COLORS.cardBackground,
-    borderRadius:    RADIUS.lg,
-    borderWidth:     1,
-    borderColor:     COLORS.cardBorder,
-    overflow:        "hidden",
-    flexDirection:   "row",
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
+    overflow: "hidden",
+    flexDirection: "row",
     ...SHADOWS.card,
   },
   postCardPinned: {
@@ -781,24 +984,24 @@ const styles = StyleSheet.create({
     width: 4,
   },
   postBody: {
-    flex:    1,
+    flex: 1,
     padding: SPACING.md,
-    gap:     SPACING.sm,
+    gap: SPACING.sm,
   },
 
   // ── Pinned row ─────────────────────────────────────────────────────────────
   pinnedRow: {
     flexDirection: "row",
-    alignItems:    "center",
-    gap:           4,
-    paddingTop:    SPACING.sm,
-    paddingLeft:   SPACING.md + 4,   // offset for the platform bar width
+    alignItems: "center",
+    gap: 4,
+    paddingTop: SPACING.sm,
+    paddingLeft: SPACING.md + 4, // offset for the platform bar width
     paddingBottom: 0,
   },
   pinnedLabel: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.medium,
-    color:      COLORS.gold,
+    color: COLORS.gold,
     fontWeight: "600",
     letterSpacing: 0.3,
   },
@@ -806,176 +1009,270 @@ const styles = StyleSheet.create({
   // ── Author row ─────────────────────────────────────────────────────────────
   authorRow: {
     flexDirection: "row",
-    alignItems:    "center",
-    gap:           SPACING.sm,
+    alignItems: "center",
+    gap: SPACING.sm,
   },
   avatarCircle: {
-    width:          38,
-    height:         38,
-    borderRadius:   RADIUS.full,
-    alignItems:     "center",
+    width: 38,
+    height: 38,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
     justifyContent: "center",
-    flexShrink:     0,
+    flexShrink: 0,
   },
   avatarInitials: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.bold,
     fontWeight: "700",
   },
   authorInfo: {
     flex: 1,
-    gap:  2,
+    gap: 2,
   },
   authorName: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.semibold,
-    color:      COLORS.textPrimary,
+    color: COLORS.textPrimary,
     fontWeight: "600",
   },
   authorSubRow: {
     flexDirection: "row",
-    alignItems:    "center",
-    gap:           4,
+    alignItems: "center",
+    gap: 4,
   },
   authorHandle: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.regular,
-    color:      COLORS.textMuted,
+    color: COLORS.textMuted,
     fontWeight: "400",
   },
   authorDot: {
-    width:           3,
-    height:          3,
-    borderRadius:    RADIUS.full,
+    width: 3,
+    height: 3,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.textMuted,
   },
   postTime: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.regular,
-    color:      COLORS.textMuted,
+    color: COLORS.textMuted,
     fontWeight: "400",
   },
   platformBadge: {
-    width:          32,
-    height:         32,
-    borderRadius:   RADIUS.md,
-    alignItems:     "center",
+    width: 32,
+    height: 32,
+    borderRadius: RADIUS.md,
+    alignItems: "center",
     justifyContent: "center",
-    flexShrink:     0,
+    flexShrink: 0,
   },
 
   // ── Post content ───────────────────────────────────────────────────────────
   postContent: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.regular,
-    color:      COLORS.textPrimary,
+    color: COLORS.textPrimary,
     fontWeight: "400",
     lineHeight: 20,
   },
   showMoreText: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.semibold,
-    color:      COLORS.gold,
+    color: COLORS.gold,
     fontWeight: "600",
-    marginTop:  -2,
+    marginTop: -2,
   },
 
   // ── Image placeholder ──────────────────────────────────────────────────────
   imagePlaceholder: {
-    height:         180,
-    borderRadius:   RADIUS.md,
-    alignItems:     "center",
+    height: 180,
+    borderRadius: RADIUS.md,
+    alignItems: "center",
     justifyContent: "center",
-    gap:            SPACING.sm,
-    overflow:       "hidden",
-    borderWidth:    1,
-    borderColor:    COLORS.cardBorder,
+    gap: SPACING.sm,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
   },
   imagePlaceholderLabel: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.medium,
-    color:      COLORS.textMuted,
+    color: COLORS.textMuted,
     fontWeight: "500",
     letterSpacing: 0.3,
   },
 
   // ── Engagement bar ─────────────────────────────────────────────────────────
   engagementBar: {
-    flexDirection:  "row",
-    alignItems:     "center",
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    paddingTop:     SPACING.xs,
+    paddingTop: SPACING.xs,
     borderTopWidth: 1,
     borderTopColor: COLORS.cardBorder,
-    marginTop:      SPACING.xs,
+    marginTop: SPACING.xs,
   },
   engagementLeft: {
     flexDirection: "row",
-    alignItems:    "center",
-    gap:           SPACING.md,
+    alignItems: "center",
+    gap: SPACING.md,
   },
   engagementBtn: {
     flexDirection: "row",
-    alignItems:    "center",
-    gap:           4,
+    alignItems: "center",
+    gap: 4,
   },
   engagementCount: {
-    fontSize:   FONT_SIZE.sm,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONTS.medium,
-    color:      COLORS.textSecondary,
+    color: COLORS.textSecondary,
     fontWeight: "500",
   },
   viewOnBtn: {
-    flexDirection:    "row",
-    alignItems:       "center",
-    gap:              4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     paddingHorizontal: SPACING.sm,
-    paddingVertical:  SPACING.xs,
-    borderRadius:     RADIUS.full,
-    borderWidth:      1,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
   },
   viewOnText: {
-    fontSize:   FONT_SIZE.xs,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.semibold,
     fontWeight: "600",
   },
 
   // ── Empty state ────────────────────────────────────────────────────────────
   emptyState: {
-    alignItems:      "center",
+    alignItems: "center",
     paddingVertical: SPACING["3xl"],
-    gap:             SPACING.sm,
+    gap: SPACING.sm,
   },
   emptyStateText: {
-    fontSize:   FONT_SIZE.lg,
+    fontSize: FONT_SIZE.lg,
     fontFamily: FONTS.semibold,
-    color:      COLORS.textSecondary,
+    color: COLORS.textSecondary,
     fontWeight: "600",
   },
   emptyStateSub: {
-    fontSize:         FONT_SIZE.sm,
-    fontFamily:       FONTS.regular,
-    color:            COLORS.textMuted,
-    textAlign:        "center",
-    fontWeight:       "400",
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    fontWeight: "400",
     paddingHorizontal: SPACING["2xl"],
   },
 
   // ── Footer ────────────────────────────────────────────────────────────────
   footer: {
-    flexDirection:    "row",
-    alignItems:       "flex-start",
-    gap:              SPACING.sm,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: SPACING.sm,
     paddingHorizontal: SPACING.xl,
-    paddingTop:       SPACING.xl,
-    paddingBottom:    SPACING.sm,
+    paddingTop: SPACING.xl,
+    paddingBottom: SPACING.sm,
   },
   footerText: {
-    flex:       1,
-    fontSize:   FONT_SIZE.xs,
+    flex: 1,
+    fontSize: FONT_SIZE.xs,
     fontFamily: FONTS.regular,
-    color:      COLORS.textMuted,
+    color: COLORS.textMuted,
     fontWeight: "400",
     lineHeight: 16,
+  },
+
+  // ── Share Modal ────────────────────────────────────────────────────────────
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.lg,
+  },
+  modalContent: {
+    backgroundColor: COLORS.navyDark,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    width: "100%",
+    maxWidth: 340,
+    ...SHADOWS.card,
+  },
+  modalTitle: {
+    fontSize: FONT_SIZE.lg,
+    fontFamily: FONTS.bold,
+    color: COLORS.textPrimary,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: SPACING.md,
+  },
+  modalPostPreview: {
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.regular,
+    color: COLORS.textSecondary,
+    fontWeight: "400",
+    marginBottom: SPACING.lg,
+    paddingHorizontal: SPACING.sm,
+  },
+  shareOptions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: SPACING.lg,
+    marginBottom: SPACING.lg,
+  },
+  shareOption: {
+    alignItems: "center",
+    gap: SPACING.sm,
+    padding: SPACING.sm,
+    flex: 1,
+  },
+  shareIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: RADIUS.full,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareOptionLabel: {
+    fontSize: FONT_SIZE.sm,
+    fontFamily: FONTS.medium,
+    color: COLORS.textPrimary,
+    fontWeight: "500",
+  },
+  modalCancelBtn: {
+    paddingVertical: SPACING.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.cardBorder,
+  },
+  modalCancelText: {
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.semibold,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+
+  // ── Copied Toast ────────────────────────────────────────────────────────────
+  toastOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  toastContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+    backgroundColor: COLORS.navyDark,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.full,
+    ...SHADOWS.card,
+  },
+  toastText: {
+    fontSize: FONT_SIZE.md,
+    fontFamily: FONTS.medium,
+    color: COLORS.textPrimary,
+    fontWeight: "500",
   },
 });
