@@ -67,31 +67,50 @@ export interface UpcomingEvent {
 export const MOCK_UPCOMING_EVENTS: UpcomingEvent[] = [
   {
     id:         "evt_001",
-    title:      "State Leadership Conference",
-    date:       "2026-04-05",
+    title:      "State Business Leadership Conference",
+    date:       "2026-04-21",
     time:       "8:00 AM",
-    location:   "Sacramento Convention Center",
+    location:   "Davenport Grand Hotel, Spokane",
     type:       "conference",
     isReminder: true,
   },
   {
-    id:         "evt_002",
-    title:      "Chapter Officer Meeting",
-    date:       "2026-03-28",
-    time:       "3:30 PM",
-    location:   "Room 204, Lincoln HS",
-    type:       "meeting",
-    isReminder: false,
-  },
-  {
     id:         "evt_003",
     title:      "NLC Registration Deadline",
-    date:       "2026-04-01",
+    date:       "2026-05-02",
     time:       "11:59 PM",
     location:   "Online",
     type:       "deadline",
     isReminder: true,
   },
+  {
+    id:         "evt_002",
+    title:      "National Leadership Conference",
+    date:       "2026-06-29",
+    time:       "8:00 AM",
+    location:   "San Antonio, Texas",
+    type:       "conference",
+    isReminder: false,
+  },
+  {
+    id:         "evt_004",
+    title:      "SBLC Recap Meeting",
+    date:       "2026-05-19",
+    time:       "11:50 AM",
+    location:   "Mountain View Skybox",
+    type:       "meeting",
+    isReminder: true,
+  },
+  {
+    id:         "evt_005",
+    title:      "Officer Elections",
+    date:       "2026-05-28",
+    time:       "11:50 AM",
+    location:   "Mountain View Skybox",
+    type:       "meeting",
+    isReminder: true,
+  },
+
 ];
 
 // ─── News Feed Items ───────────────────────────────────────────────────────────

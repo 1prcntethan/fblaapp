@@ -171,12 +171,12 @@ function EventCard({ event, onPress }: EventCardProps) {
       </View>
 
       {/* Reminder bell — gold if reminder is set */}
-      <Ionicons
+      {/* <Ionicons
         name={event.isReminder ? "notifications" : "notifications-outline"}
         size={18}
         color={event.isReminder ? COLORS.gold : COLORS.textMuted}
         style={styles.eventBell}
-      />
+      /> */}
     </TouchableOpacity>
   );
 }
